@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: prompt_craft
+      POSTGRES_USER: prompt_craft_user
+      POSTGRES_PASSWORD: prompt_craft_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U prompt_craft_user -d prompt_craft"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DATABASE_URL=postgresql://prompt_craft_user:prompt_craft_password@postgres:5432/prompt_craft
+      - DATABUTTON_EXTENSIONS=[{"name":"shadcn","version":"1"},{"name":"stack-auth","version":"1","config":{"projectId":"e4119b24-b4d0-47bc-aca4-f7c8638e9cd7","publishableClientKey":"pck_7ymt73wgm4b7f0tkdm9dtvgzvs2kg33km3nrv6b1bkwv8","jwksUrl":"https://api.stack-auth.com/api/v1/projects/e4119b24-b4d0-47bc-aca4-f7c8638e9cd7/.well-known/jwks.json","secretRefForSecretServerKey":{"name":"STACK_SECRET_SERVER_KEY"}}},{"name":"neon-database","version":"1","config":{"neonProjectId":"odd-grass-58220054","secretRefs":{"env":{"prod":{"admin":{"name":"DATABASE_URL_ADMIN_PROD"},"app":{"name":"DATABASE_URL_PROD"}},"dev":{"admin":{"name":"DATABASE_URL_ADMIN_DEV"},"app":{"name":"DATABASE_URL_DEV"}}}}}}]
+      - DB_LOCAL=False
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://backend:8000
+
+volumes:
+  postgres_data: 
