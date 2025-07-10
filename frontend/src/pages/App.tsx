@@ -31,6 +31,8 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useCategories } from "@/hooks/useData";
 import { useAuthOptimization } from "@/hooks/useAuthOptimization";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 
 const iconMapping: { [key: string]: React.ElementType } = {
   Rocket: Rocket,
@@ -47,6 +49,7 @@ const App = () => {
   const { data: categories, isLoading: loading } = useCategories();
   const [animatedText, setAnimatedText] = useState("");
   const fullText = "Transform AI from intimidating to empowering";
+  const { t } = useTranslation();
 
   useEffect(() => {
     let i = 0;
@@ -98,23 +101,25 @@ const App = () => {
               document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
             }}
           >
-            Features
+            {t("features")}
           </button>
-          <button className="text-gray-600 hover:text-blue-600 transition-colors" onClick={() => navigate("/lessons")}>Lessons</button>
-          <button className="text-gray-600 hover:text-blue-600 transition-colors" onClick={() => navigate("/practice-playground")}>Practice</button>
+          <button className="text-gray-600 hover:text-blue-600 transition-colors" onClick={() => navigate("/lessons")}>{t("lessons")}</button>
+          <button className="text-gray-600 hover:text-blue-600 transition-colors" onClick={() => navigate("/practice-playground")}>{t("practice")}</button>
           {user && (
-            <button className="text-gray-600 hover:text-blue-600 transition-colors" onClick={() => navigate("/dashboard")}>Dashboard</button>
+            <button className="text-gray-600 hover:text-blue-600 transition-colors" onClick={() => navigate("/dashboard")}>{t("dashboard")}</button>
           )}
 
           {user ? (
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">Welcome back, {user.displayName || user.primaryEmail}!</span>
+              <span className="text-sm text-gray-600">{t("welcome_back", { name: user.displayName || user.primaryEmail })}</span>
+              <LanguageSwitcher />
               <UserButton />
             </div>
           ) : (
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" onClick={() => navigate("/auth/sign-in")}>Sign In</Button>
-              <Button onClick={() => navigate("/auth/sign-up")}>Get Started</Button>
+              <LanguageSwitcher />
+              <Button variant="ghost" onClick={() => navigate("/auth/sign-in")}>{t("sign_in")}</Button>
+              <Button onClick={() => navigate("/auth/sign-up")}>{t("get_started")}</Button>
             </div>
           )}
         </div>
@@ -127,13 +132,13 @@ const App = () => {
             <div className="space-y-4">
               <span className="inline-block bg-blue-100 text-blue-700 rounded px-2 py-1 text-xs font-semibold mr-2 align-middle">
                 <Sparkles className="w-3 h-3 mr-1 inline" />
-                Perfect for Non-Tech Professionals
+                {t("perfect_for_non_tech_professionals")}
               </span>
 
               <h1 className="text-5xl font-bold leading-tight">
-                Master AI Skills,
+                {t("master_ai_skills")},
                 <span className="block bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  No Tech Background Required
+                  {t("no_tech_background_required")}
                 </span>
               </h1>
 
@@ -143,7 +148,7 @@ const App = () => {
                   <span className="animate-pulse">|</span>
                 </span>
                 <br />
-                Learn prompting, master AI tools, and apply them to real business scenarios through interactive lessons and practice.
+                {t("learn_prompting_master_ai_tools_apply_real_business_scenarios")}
               </p>
             </div>
 
@@ -153,7 +158,7 @@ const App = () => {
                 onClick={handleGetStarted}
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white group"
               >
-                {user ? "Go to Dashboard" : "Start Your AI Journey"}
+                {user ? t("go_to_dashboard") : t("start_your_ai_journey")}
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
 
@@ -164,22 +169,22 @@ const App = () => {
                 className="group"
               >
                 <Play className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                Try Interactive Demo
+                {t("try_interactive_demo")}
               </Button>
             </div>
 
             <div className="flex items-center space-x-8 text-sm text-gray-600">
               <div className="flex items-center space-x-2">
                 <CheckCircle className="w-4 h-4 text-green-500" />
-                <span>No coding required</span>
+                <span>{t("no_coding_required")}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle className="w-4 h-4 text-green-500" />
-                <span>Real workplace scenarios</span>
+                <span>{t("real_workplace_scenarios")}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle className="w-4 h-4 text-green-500" />
-                <span>AI-powered feedback</span>
+                <span>{t("ai_powered_feedback")}</span>
               </div>
             </div>
           </div>
@@ -189,16 +194,16 @@ const App = () => {
             <div className="bg-white rounded-2xl shadow-2xl p-6 transform hover:scale-105 transition-transform duration-300">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-gray-900">Interactive Lesson Preview</h3>
-                  <span className="inline-block bg-purple-100 text-purple-700 rounded px-2 py-1 text-xs font-semibold">Live Demo</span>
+                  <h3 className="font-semibold text-gray-900">{t("interactive_lesson_preview")}</h3>
+                  <span className="inline-block bg-purple-100 text-purple-700 rounded px-2 py-1 text-xs font-semibold">{t("live_demo")}</span>
                 </div>
 
                 <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-                  <p className="text-sm text-gray-600">Try writing a prompt for:</p>
-                  <p className="font-medium">"Create a professional email to reschedule a meeting"</p>
+                  <p className="text-sm text-gray-600">{t("try_writing_a_prompt_for")}:</p>
+                  <p className="font-medium">"{t("create_a_professional_email_to_reschedule_a_meeting")}"</p>
 
                   <div className="bg-white border rounded-lg p-3 min-h-[100px] text-sm text-gray-500 italic">
-                    Click "Try Demo" to start practicing...
+                    {t("click_try_demo_to_start_practicing")}
                   </div>
 
                   <div className="flex justify-between items-center">
@@ -207,7 +212,7 @@ const App = () => {
                       <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse delay-100"></div>
                       <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse delay-200"></div>
                     </div>
-                    <span className="text-xs text-gray-400">AI scoring: Ready</span>
+                    <span className="text-xs text-gray-400">{t("ai_scoring_ready")}</span>
                   </div>
                 </div>
               </div>
@@ -230,19 +235,19 @@ const App = () => {
           <div className="text-center space-y-6 mb-16">
             <span className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 rounded-full px-4 py-2 text-sm font-semibold">
               <Target className="w-4 h-4" />
-              Your Learning Journey
+              {t("your_learning_journey")}
             </span>
             
             <h2 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
               <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Master Prompting Skills
+                {t("master_prompting_skills")}
               </span>
               <br />
-              From Beginner to Expert
+              {t("from_beginner_to_expert")}
             </h2>
             
             <p className="max-w-3xl mx-auto text-xl text-gray-600 leading-relaxed">
-              Follow our structured learning path designed by AI experts. Learn fundamentals, practice with real scenarios, and apply advanced techniques to boost your career.
+              {t("follow_our_structured_learning_path_designed_by_ai_experts")}
             </p>
           </div>
 
@@ -296,7 +301,7 @@ const App = () => {
                         <CardHeader className="text-center space-y-4">
                           {/* Step Badge */}
                           <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${stepColors[index]?.badge}`}>
-                            Step {index + 1}: {stepLabels[index]}
+                            {t("step")} {index + 1}: {stepLabels[index]}
                           </div>
                           
                           {/* Icon */}
@@ -319,17 +324,17 @@ const App = () => {
                           <div className="flex items-center justify-between text-xs text-gray-500">
                             <div className="flex items-center gap-1">
                               <Book className="w-3 h-3" />
-                              <span>{category.total_lessons} Lessons</span>
+                              <span>{category.total_lessons} {t("lessons")}</span>
                             </div>
                             <div className="flex items-center gap-1">
                               <Target className="w-3 h-3" />
-                              <span>Practice Included</span>
+                              <span>{t("practice_included")}</span>
                             </div>
                           </div>
                           
                           {/* Skills You'll Gain */}
                           <div className="space-y-2">
-                            <p className="text-xs font-medium text-gray-700">Skills You'll Gain:</p>
+                            <p className="text-xs font-medium text-gray-700">{t("skills_youll_gain")}:</p>
                             <div className="flex flex-wrap gap-1">
                               {[
                                 ['Basic Prompts', 'AI Fundamentals', 'Clear Instructions'],
@@ -349,7 +354,7 @@ const App = () => {
                             className={`w-full bg-gradient-to-r ${stepColors[index]?.bg} hover:scale-105 text-white group transition-all duration-300`}
                             onClick={() => handleCategoryClick(category.id, category.name)}
                           >
-                            Start Learning
+                            {t("start_learning")}
                             <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
                           </Button>
                         </CardContent>
@@ -377,24 +382,24 @@ const App = () => {
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mx-auto">
                   <Brain className="w-8 h-8 text-blue-600" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900">Build Core Skills</h3>
-                <p className="text-gray-600">Master the fundamentals of AI prompting with hands-on practice and real-world examples.</p>
+                <h3 className="text-xl font-bold text-gray-900">{t("build_core_skills")}</h3>
+                <p className="text-gray-600">{t("master_the_fundamentals_of_ai_prompting_with_hands_on_practice_and_real_world_examples")}</p>
               </div>
               
               <div className="text-center space-y-4">
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center mx-auto">
                   <Trophy className="w-8 h-8 text-purple-600" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900">Practice & Compete</h3>
-                <p className="text-gray-600">Apply your skills in challenges, compete with peers, and track your progress on leaderboards.</p>
+                <h3 className="text-xl font-bold text-gray-900">{t("practice_compete")}</h3>
+                <p className="text-gray-600">{t("apply_your_skills_in_challenges_compete_with_peers_and_track_your_progress_on_leaderboards")}</p>
               </div>
               
               <div className="text-center space-y-4">
                 <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center mx-auto">
                   <Rocket className="w-8 h-8 text-green-600" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900">Advance Your Career</h3>
-                <p className="text-gray-600">Use AI tools effectively in your job, increase productivity, and become the go-to AI expert in your field.</p>
+                <h3 className="text-xl font-bold text-gray-900">{t("advance_your_career")}</h3>
+                <p className="text-gray-600">{t("use_ai_tools_effectively_in_your_job_increase_productivity_and_become_the_go_to_ai_expert_in_your_field")}</p>
               </div>
             </div>
           </div>
@@ -406,10 +411,10 @@ const App = () => {
               onClick={() => navigate("/lessons")}
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg group"
             >
-              {user ? "Explore Lessons" : "Start Your Learning Journey"}
+              {user ? t("explore_lessons") : t("start_your_learning_journey")}
               <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <p className="text-gray-500 text-sm mt-3">Join 5,000+ professionals already advancing their careers with AI</p>
+            <p className="text-gray-500 text-sm mt-3">{t("join_5000_plus_professionals_already_advancing_their_careers_with_ai")}</p>
           </div>
         </div>
       </section>
@@ -422,20 +427,20 @@ const App = () => {
               <div className="space-y-6">
                 <span className="inline-flex items-center gap-2 border border-purple-400 text-purple-600 rounded-full px-4 py-2 text-sm font-semibold bg-purple-50">
                   <Trophy className="w-4 h-4" />
-                  Practice Playground
+                  {t("practice_playground")}
                 </span>
                 
                 <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900">
                   <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                    Unlock Your Potential
+                    {t("unlock_your_potential")}
                   </span>
                   <br />
-                  with Hands-On AI Practice
+                  {t("with_hands_on_ai_practice")}
                 </h2>
                 
                 <p className="text-xl text-gray-700 leading-relaxed">
-                  Master prompting through real challenges, compete on leaderboards, and build a portfolio of your best work. 
-                  Practice makes perfect — and our AI-powered feedback makes it fun.
+                  {t("master_prompting_through_real_challenges_compete_on_leaderboards_and_build_a_portfolio_of_your_best_work")} 
+                  {t("practice_makes_perfect")} — {t("and_our_ai_powered_feedback_makes_it_fun")}
                 </p>
               </div>
 
@@ -444,19 +449,19 @@ const App = () => {
                   <div className="flex items-center justify-center w-8 h-8 bg-green-100 rounded-full">
                     <Target className="w-4 h-4 text-green-600" />
                   </div>
-                  <span className="font-medium">Real-world prompting challenges</span>
+                  <span className="font-medium">{t("real_world_prompting_challenges")}</span>
                 </div>
                 <div className="flex items-center gap-3 text-gray-700">
                   <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full">
                     <Trophy className="w-4 h-4 text-blue-600" />
                   </div>
-                  <span className="font-medium">Compete on skill leaderboards</span>
+                  <span className="font-medium">{t("compete_on_skill_leaderboards")}</span>
                 </div>
                 <div className="flex items-center gap-3 text-gray-700">
                   <div className="flex items-center justify-center w-8 h-8 bg-purple-100 rounded-full">
                     <Award className="w-4 h-4 text-purple-600" />
                   </div>
-                  <span className="font-medium">Build your prompting portfolio</span>
+                  <span className="font-medium">{t("build_your_prompting_portfolio")}</span>
                 </div>
               </div>
 
@@ -467,7 +472,7 @@ const App = () => {
                   onClick={() => navigate('/practice-playground')}
                 >
                   <Play className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                  Start Practicing Now
+                  {t("start_practicing_now")}
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button 
@@ -476,7 +481,7 @@ const App = () => {
                   className="border-purple-200 text-purple-700 hover:bg-purple-50"
                   onClick={() => navigate('/practice-playground?tab=leaderboards')}
                 >
-                  {user ? "View Leaderboard" : "Learn First"}
+                  {user ? t("view_leaderboard") : t("learn_first")}
                 </Button>
               </div>
             </div>
@@ -493,25 +498,25 @@ const App = () => {
                         <Brain className="w-5 h-5 text-white" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-gray-900">Practice Challenge</h3>
-                        <p className="text-sm text-gray-500">Marketing Email Generator</p>
+                        <h3 className="font-bold text-gray-900">{t("practice_challenge")}</h3>
+                        <p className="text-sm text-gray-500">{t("marketing_email_generator")}</p>
                       </div>
                     </div>
-                    <Badge variant="secondary">
+                    <Badge>
                       <Timer className="w-3 h-3 mr-1" />
-                      Live
+                      {t("live")}
                     </Badge>
                   </div>
 
                   {/* Challenge Preview */}
                   <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-                    <p className="text-sm font-medium text-gray-700">Challenge Brief:</p>
+                    <p className="text-sm font-medium text-gray-700">{t("challenge_brief")}:</p>
                     <p className="text-sm text-gray-600">
-                      "Create a compelling email campaign for a new productivity app launch targeting remote workers..."
+                      "{t("create_a_compelling_email_campaign_for_a_new_productivity_app_launch_targeting_remote_workers")}"
                     </p>
                     
                     <div className="bg-white border-2 border-dashed border-gray-200 rounded-lg p-3 min-h-[80px] flex items-center justify-center">
-                      <span className="text-gray-400 text-sm italic">Your prompt goes here...</span>
+                      <span className="text-gray-400 text-sm italic">{t("your_prompt_goes_here")}</span>
                     </div>
                   </div>
 
@@ -520,9 +525,9 @@ const App = () => {
                     <div className="flex items-center justify-between">
                       <h4 className="font-semibold text-gray-900 flex items-center gap-2">
                         <BarChart3 className="w-4 h-4 text-purple-600" />
-                        Top Performers
+                        {t("top_performers")}
                       </h4>
-                      <span className="text-xs text-purple-600 font-medium">Live Rankings</span>
+                      <span className="text-xs text-purple-600 font-medium">{t("live_rankings")}</span>
                     </div>
                     
                     <div className="space-y-2">
@@ -556,7 +561,7 @@ const App = () => {
                     className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
                     onClick={() => navigate('/practice-playground')}
                   >
-                    Join Challenge
+                    {t("join_challenge")}
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </div>
@@ -575,14 +580,14 @@ const App = () => {
               <div className="absolute top-4 -left-8 bg-white rounded-lg shadow-lg p-3 border border-gray-100">
                 <div className="text-center">
                   <div className="text-lg font-bold text-purple-600">2.5K+</div>
-                  <div className="text-xs text-gray-500">Active Players</div>
+                  <div className="text-xs text-gray-500">{t("active_players")}</div>
                 </div>
               </div>
               
               <div className="absolute bottom-16 -right-8 bg-white rounded-lg shadow-lg p-3 border border-gray-100">
                 <div className="text-center">
                   <div className="text-lg font-bold text-blue-600">150+</div>
-                  <div className="text-xs text-gray-500">Challenges</div>
+                  <div className="text-xs text-gray-500">{t("challenges")}</div>
                 </div>
               </div>
             </div>
@@ -596,19 +601,19 @@ const App = () => {
           <div className="text-center space-y-6 mb-16">
             <span className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full px-6 py-3 text-sm font-semibold border border-blue-200">
               <Sparkles className="w-4 h-4" />
-              Designed for Real Professionals
+              {t("designed_for_real_professionals")}
             </span>
             
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900">
               <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Why PromptCraft Works
+                {t("why_promptcraft_works")}
               </span>
               <br />
-              <span className="text-gray-800">for Non-Tech Professionals</span>
+              <span className="text-gray-800">{t("for_non_tech_professionals")}</span>
             </h2>
             
             <p className="max-w-3xl mx-auto text-xl text-gray-600 leading-relaxed">
-              We've designed every aspect of PromptCraft specifically for business professionals who want practical AI skills without the technical jargon.
+              {t("weve_designed_every_aspect_of_promptcraft_specifically_for_business_professionals_who_want_practical_ai_skills_without_the_technical_jargon")}
             </p>
           </div>
 
@@ -629,9 +634,9 @@ const App = () => {
                     </div>
                   </div>
                   <div>
-                    <CardTitle className="text-2xl font-bold text-gray-900 mb-3">Learn by Doing</CardTitle>
+                    <CardTitle className="text-2xl font-bold text-gray-900 mb-3">{t("learn_by_doing")}</CardTitle>
                     <CardDescription className="text-gray-600 text-base leading-relaxed">
-                      No boring theory or technical jargon. Jump straight into practical exercises with real business scenarios you'll actually use at work.
+                      {t("no_boring_theory_or_technical_jargon_jump_straight_into_practical_exercises_with_real_business_scenarios_youll_actually_use_at_work")}
                     </CardDescription>
                   </div>
                 </CardHeader>
@@ -639,15 +644,15 @@ const App = () => {
                   <div className="space-y-3">
                     <div className="flex items-center gap-3 text-sm text-gray-700">
                       <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      <span>Real workplace scenarios</span>
+                      <span>{t("real_workplace_scenarios")}</span>
                     </div>
                     <div className="flex items-center gap-3 text-sm text-gray-700">
                       <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                      <span>Hands-on practice exercises</span>
+                      <span>{t("hands_on_practice_exercises")}</span>
                     </div>
                     <div className="flex items-center gap-3 text-sm text-gray-700">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span>Immediate application</span>
+                      <span>{t("immediate_application")}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -669,9 +674,9 @@ const App = () => {
                     </div>
                   </div>
                   <div>
-                    <CardTitle className="text-2xl font-bold text-gray-900 mb-3">AI-Powered Feedback</CardTitle>
+                    <CardTitle className="text-2xl font-bold text-gray-900 mb-3">{t("ai_powered_feedback")}</CardTitle>
                     <CardDescription className="text-gray-600 text-base leading-relaxed">
-                      Get instant, personalized feedback on your prompts. Learn exactly what works, what doesn't, and how to improve step by step.
+                      {t("get_instant_personalized_feedback_on_your_prompts_learn_exactly_what_works_what_doesnt_and_how_to_improve_step_by_step")}
                     </CardDescription>
                   </div>
                 </CardHeader>
@@ -679,15 +684,15 @@ const App = () => {
                   <div className="space-y-3">
                     <div className="flex items-center gap-3 text-sm text-gray-700">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span>Instant scoring & analysis</span>
+                      <span>{t("instant_scoring_analysis")}</span>
                     </div>
                     <div className="flex items-center gap-3 text-sm text-gray-700">
                       <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      <span>Personalized improvement tips</span>
+                      <span>{t("personalized_improvement_tips")}</span>
                     </div>
                     <div className="flex items-center gap-3 text-sm text-gray-700">
                       <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                      <span>Detailed explanations</span>
+                      <span>{t("detailed_explanations")}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -709,9 +714,9 @@ const App = () => {
                     </div>
                   </div>
                   <div>
-                    <CardTitle className="text-2xl font-bold text-gray-900 mb-3">Progressive Learning</CardTitle>
+                    <CardTitle className="text-2xl font-bold text-gray-900 mb-3">{t("progressive_learning")}</CardTitle>
                     <CardDescription className="text-gray-600 text-base leading-relaxed">
-                      Start with basics and gradually master advanced techniques at your own pace. Build confidence as you progress through structured levels.
+                      {t("start_with_basics_and_gradually_master_advanced_techniques_at_your_own_pace_build_confidence_as_you_progress_through_structured_levels")}
                     </CardDescription>
                   </div>
                 </CardHeader>
@@ -719,15 +724,15 @@ const App = () => {
                   <div className="space-y-3">
                     <div className="flex items-center gap-3 text-sm text-gray-700">
                       <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                      <span>Structured learning path</span>
+                      <span>{t("structured_learning_path")}</span>
                     </div>
                     <div className="flex items-center gap-3 text-sm text-gray-700">
                       <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
-                      <span>Self-paced progression</span>
+                      <span>{t("self_paced_progression")}</span>
                     </div>
                     <div className="flex items-center gap-3 text-sm text-gray-700">
                       <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                      <span>Confidence building</span>
+                      <span>{t("confidence_building")}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -738,9 +743,9 @@ const App = () => {
           {/* Additional Benefits Section */}
           <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20">
             <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">What Makes Us Different</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">{t("what_makes_us_different")}</h3>
               <p className="text-gray-600 max-w-2xl mx-auto">
-                Unlike traditional tech courses, we focus on practical business applications that you can use immediately in your career.
+                {t("unlike_traditional_tech_courses_we_focus_on_practical_business_applications_that_you_can_use_immediately_in_your_career")}
               </p>
             </div>
             
@@ -749,32 +754,32 @@ const App = () => {
                 <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto">
                   <Users className="w-6 h-6 text-blue-600" />
                 </div>
-                <h4 className="font-semibold text-gray-900">No Tech Background Required</h4>
-                <p className="text-sm text-gray-600">Designed for business professionals, not developers</p>
+                <h4 className="font-semibold text-gray-900">{t("no_tech_background_required")}</h4>
+                <p className="text-sm text-gray-600">{t("designed_for_business_professionals_not_developers")}</p>
               </div>
               
               <div className="text-center space-y-3">
                 <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto">
                   <Clock className="w-6 h-6 text-green-600" />
                 </div>
-                <h4 className="font-semibold text-gray-900">Learn at Your Own Pace</h4>
-                <p className="text-sm text-gray-600">Flexible learning that fits your busy schedule</p>
+                <h4 className="font-semibold text-gray-900">{t("learn_at_your_own_pace")}</h4>
+                <p className="text-sm text-gray-600">{t("flexible_learning_that_fits_your_busy_schedule")}</p>
               </div>
               
               <div className="text-center space-y-3">
                 <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto">
                   <Trophy className="w-6 h-6 text-purple-600" />
                 </div>
-                <h4 className="font-semibold text-gray-900">Proven Results</h4>
-                <p className="text-sm text-gray-600">Join 5,000+ professionals who've transformed their work</p>
+                <h4 className="font-semibold text-gray-900">{t("proven_results")}</h4>
+                <p className="text-sm text-gray-600">{t("join_5000_plus_professionals_whove_transformed_their_work")}</p>
               </div>
               
               <div className="text-center space-y-3">
                 <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mx-auto">
                   <Award className="w-6 h-6 text-orange-600" />
                 </div>
-                <h4 className="font-semibold text-gray-900">Career Impact</h4>
-                <p className="text-sm text-gray-600">Skills that directly improve your job performance</p>
+                <h4 className="font-semibold text-gray-900">{t("career_impact")}</h4>
+                <p className="text-sm text-gray-600">{t("skills_that_directly_improve_your_job_performance")}</p>
               </div>
             </div>
           </div>
@@ -786,10 +791,10 @@ const App = () => {
               onClick={() => navigate("/lessons")}
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg group shadow-xl hover:shadow-2xl transition-all duration-300"
             >
-              {user ? "Start Practicing" : "Start Learning Today"}
+              {user ? t("start_practicing") : t("start_learning_today")}
               <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <p className="text-gray-500 text-sm mt-4">Join professionals already mastering AI in their careers</p>
+            <p className="text-gray-500 text-sm mt-4">{t("join_professionals_already_mastering_ai_in_their_careers")}</p>
           </div>
         </div>
       </section>
@@ -800,19 +805,19 @@ const App = () => {
           <div className="text-center space-y-6 mb-16">
             <span className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full px-6 py-3 text-sm font-semibold border border-blue-200 animate-pulse">
               <Star className="w-4 h-4" />
-              Success Stories
+              {t("success_stories")}
             </span>
             
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900">
               <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Join Professionals
+                {t("join_professionals")}
               </span>
               <br />
-              <span className="text-gray-800">Already Mastering AI</span>
+              <span className="text-gray-800">{t("already_mastering_ai")}</span>
             </h2>
             
             <p className="max-w-3xl mx-auto text-xl text-gray-600 leading-relaxed">
-              See how PromptCraft transformed their work and careers. Real stories from real professionals.
+              {t("see_how_promptcraft_transformed_their_work_and_careers_real_stories_from_real_professionals")}
             </p>
           </div>
 
@@ -841,7 +846,7 @@ const App = () => {
                   </div>
                   
                   <p className="text-gray-700 mb-6 leading-relaxed text-lg relative z-10">
-                    "I went from being intimidated by AI to using it daily for client communications. The practical approach made all the difference."
+                    "{t("i_went_from_being_intimidated_by_ai_to_using_it_daily_for_client_communications_the_practical_approach_made_all_the_difference")}"
                   </p>
                   
                   {/* Enhanced Profile */}
@@ -854,11 +859,11 @@ const App = () => {
                       <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-pulse"></div>
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900">Sarah Chen</p>
-                      <p className="text-sm text-gray-500">Marketing Manager</p>
+                      <p className="font-semibold text-gray-900">{t("sarah_chen")}</p>
+                      <p className="text-sm text-gray-500">{t("marketing_manager")}</p>
                       <div className="flex items-center gap-1 mt-1">
                         <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                        <span className="text-xs text-green-600 font-medium">40% productivity increase</span>
+                        <span className="text-xs text-green-600 font-medium">{t("40_percent_productivity_increase")}</span>
                       </div>
                     </div>
                   </div>
@@ -889,7 +894,7 @@ const App = () => {
                   </div>
                   
                   <p className="text-gray-700 mb-6 leading-relaxed text-lg relative z-10">
-                    "The AI feedback system helped me understand exactly what makes a good prompt. My productivity increased by 40%."
+                    "{t("the_ai_feedback_system_helped_me_understand_exactly_what_makes_a_good_prompt_my_productivity_increased_by_40_percent")}"
                   </p>
                   
                   {/* Enhanced Profile */}
@@ -902,11 +907,11 @@ const App = () => {
                       <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white animate-pulse"></div>
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900">Mike Rodriguez</p>
-                      <p className="text-sm text-gray-500">Sales Director</p>
+                      <p className="font-semibold text-gray-900">{t("mike_rodriguez")}</p>
+                      <p className="text-sm text-gray-500">{t("sales_director")}</p>
                       <div className="flex items-center gap-1 mt-1">
                         <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                        <span className="text-xs text-blue-600 font-medium">AI expert in team</span>
+                        <span className="text-xs text-blue-600 font-medium">{t("ai_expert_in_team")}</span>
                       </div>
                     </div>
                   </div>
@@ -937,7 +942,7 @@ const App = () => {
                   </div>
                   
                   <p className="text-gray-700 mb-6 leading-relaxed text-lg relative z-10">
-                    "Finally, an AI course that speaks my language. No technical jargon, just practical skills I use every day."
+                    "{t("finally_an_ai_course_that_speaks_my_language_no_technical_jargon_just_practical_skills_i_use_every_day")}"
                   </p>
                   
                   {/* Enhanced Profile */}
@@ -950,11 +955,11 @@ const App = () => {
                       <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-pink-500 rounded-full border-2 border-white animate-pulse"></div>
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900">Jennifer Wang</p>
-                      <p className="text-sm text-gray-500">Operations Lead</p>
+                      <p className="font-semibold text-gray-900">{t("jennifer_wang")}</p>
+                      <p className="text-sm text-gray-500">{t("operations_lead")}</p>
                       <div className="flex items-center gap-1 mt-1">
                         <div className="w-2 h-2 bg-pink-500 rounded-full animate-pulse"></div>
-                        <span className="text-xs text-pink-600 font-medium">Daily AI user</span>
+                        <span className="text-xs text-pink-600 font-medium">{t("daily_ai_user")}</span>
                       </div>
                     </div>
                   </div>
@@ -969,32 +974,32 @@ const App = () => {
               <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                 <Users className="w-8 h-8 text-white" />
               </div>
-              <div className="text-3xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">5,000+</div>
-              <div className="text-sm text-gray-600">Active Learners</div>
+              <div className="text-3xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">{t("5000_plus_learners")}</div>
+              <div className="text-sm text-gray-600">{t("active_learners")}</div>
             </div>
             
             <div className="text-center group">
               <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                 <Trophy className="w-8 h-8 text-white" />
               </div>
-              <div className="text-3xl font-bold text-gray-900 mb-2 group-hover:text-green-600 transition-colors">94%</div>
-              <div className="text-sm text-gray-600">Success Rate</div>
+              <div className="text-3xl font-bold text-gray-900 mb-2 group-hover:text-green-600 transition-colors">{t("94_percent_success_rate")}</div>
+              <div className="text-sm text-gray-600">{t("success_rate")}</div>
             </div>
             
             <div className="text-center group">
               <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                 <Star className="w-8 h-8 text-white" />
               </div>
-              <div className="text-3xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">4.9/5</div>
-              <div className="text-sm text-gray-600">Average Rating</div>
+              <div className="text-3xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">{t("4_9_average_rating")}</div>
+              <div className="text-sm text-gray-600">{t("average_rating")}</div>
             </div>
             
             <div className="text-center group">
               <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                 <Rocket className="w-8 h-8 text-white" />
               </div>
-              <div className="text-3xl font-bold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">40%</div>
-              <div className="text-sm text-gray-600">Productivity Boost</div>
+              <div className="text-3xl font-bold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">{t("40_percent_productivity_boost")}</div>
+              <div className="text-sm text-gray-600">{t("productivity_boost")}</div>
             </div>
           </div>
 
@@ -1005,10 +1010,10 @@ const App = () => {
               onClick={handleGetStarted}
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg group shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
             >
-              {user ? "Continue Your Journey" : "Join Them Today"}
+              {user ? t("continue_your_journey") : t("join_them_today")}
               <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <p className="text-gray-500 text-sm mt-4 animate-pulse">Start your AI transformation journey today</p>
+            <p className="text-gray-500 text-sm mt-4 animate-pulse">{t("start_your_ai_transformation_journey_today")}</p>
           </div>
         </div>
       </section>
@@ -1016,10 +1021,10 @@ const App = () => {
       <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
         <div className="max-w-7xl mx-auto px-6 text-center space-y-8">
           <h2 className="text-4xl font-bold">
-            Ready to Start Your AI Journey?
+            {t("ready_to_start_your_ai_journey")}
           </h2>
           <p className="text-xl text-blue-100">
-            Choose your path and begin transforming your work with AI today
+            {t("choose_your_path_and_begin_transforming_your_work_with_ai_today")}
           </p>
 
           <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
@@ -1028,15 +1033,15 @@ const App = () => {
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <Play className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Try Free Demo</h3>
-              <p className="text-blue-100 text-sm mb-4">Experience the platform with no commitment</p>
+              <h3 className="text-lg font-semibold mb-2">{t("try_free_demo")}</h3>
+              <p className="text-blue-100 text-sm mb-4">{t("experience_the_platform_with_no_commitment")}</p>
               <Button
                 size="sm"
                 variant="outline"
                 onClick={handleTryDemo}
                 className="w-full border-white text-white hover:bg-white hover:text-blue-600 bg-white/20"
               >
-                Start Demo
+                {t("start_demo")}
               </Button>
             </div>
 
@@ -1045,15 +1050,15 @@ const App = () => {
               <div className="w-12 h-12 bg-white/30 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <Rocket className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Full Access</h3>
-              <p className="text-blue-100 text-sm mb-4">Unlock all lessons and practice challenges</p>
+              <h3 className="text-lg font-semibold mb-2">{t("full_access")}</h3>
+              <p className="text-blue-100 text-sm mb-4">{t("unlock_all_lessons_and_practice_challenges")}</p>
               <Button
                 size="sm"
                 variant="outline"
                 onClick={handleGetStarted}
                 className="w-full border-white text-white hover:bg-white hover:text-blue-600 bg-white/20"
               >
-                {user ? "Go to Dashboard" : "Get Started Free"}
+                {user ? t("go_to_dashboard") : t("get_started_free")}
               </Button>
             </div>
 
@@ -1062,15 +1067,15 @@ const App = () => {
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <Book className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Browse Lessons</h3>
-              <p className="text-blue-100 text-sm mb-4">Explore our structured learning path</p>
+              <h3 className="text-lg font-semibold mb-2">{t("browse_lessons")}</h3>
+              <p className="text-blue-100 text-sm mb-4">{t("explore_our_structured_learning_path")}</p>
               <Button
                 size="sm"
                 variant="outline"
                 onClick={() => navigate("/lessons")}
                 className="w-full border-white text-white hover:bg-white hover:text-blue-600 bg-white/20"
               >
-                View Lessons
+                {t("view_lessons")}
               </Button>
             </div>
           </div>
@@ -1078,15 +1083,15 @@ const App = () => {
           <div className="flex items-center justify-center space-x-8 text-blue-100 pt-4">
             <div className="flex items-center space-x-2">
               <Users className="w-5 h-5" />
-              <span>5,000+ learners</span>
+              <span>{t("5000_plus_learners")}</span>
             </div>
             <div className="flex items-center space-x-2">
               <Star className="w-5 h-5" />
-              <span>4.9/5 rating</span>
+              <span>{t("4_9_average_rating")}</span>
             </div>
             <div className="flex items-center space-x-2">
               <CheckCircle className="w-5 h-5" />
-              <span>No risk, start free</span>
+              <span>{t("no_risk_start_free")}</span>
             </div>
           </div>
         </div>
@@ -1103,38 +1108,38 @@ const App = () => {
                 <span className="text-xl font-bold">PromptCraft</span>
               </div>
               <p className="text-gray-400">
-                Empowering non-tech professionals with practical AI skills
+                {t("empowering_non_tech_professionals_with_practical_ai_skills")}
               </p>
             </div>
 
             <div>
-              <h3 className="font-semibold mb-4">Learn</h3>
+              <h3 className="font-semibold mb-4">{t("learn")}</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Prompting Basics</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">AI Tools</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Business Applications</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Practice Playground</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">{t("prompting_basics")}</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">{t("ai_tools")}</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">{t("business_applications")}</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">{t("practice_playground")}</a></li>
               </ul>
             </div>
 
             <div>
-              <h3 className="font-semibold mb-4">Support</h3>
+              <h3 className="font-semibold mb-4">{t("support")}</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Community</a></li>
-                <li><a href="mailto:hoangduy.cqb.2k@gmail.com" className="hover:text-white transition-colors">Gmail</a></li>
-                <li><a href="tel:+84914542457" className="hover:text-white transition-colors">Phone</a></li>
-                <li><a href="https://linkedin.com/in/duy-hoang-vien/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">LinkedIn</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">{t("help_center")}</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">{t("community")}</a></li>
+                <li><a href="mailto:hoangduy.cqb.2k@gmail.com" className="hover:text-white transition-colors">{t("gmail")}</a></li>
+                <li><a href="tel:+84914542457" className="hover:text-white transition-colors">{t("phone")}</a></li>
+                <li><a href="https://linkedin.com/in/duy-hoang-vien/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">{t("linkedin")}</a></li>
               </ul>
             </div>
 
             <div>
-              <h3 className="font-semibold mb-4">Company</h3>
+              <h3 className="font-semibold mb-4">{t("company")}</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="https://linkedin.com/company/vng-coporation/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">About</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Privacy</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Terms</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
+                <li><a href="https://linkedin.com/company/vng-coporation/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">{t("about")}</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">{t("privacy")}</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">{t("terms")}</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">{t("blog")}</a></li>
               </ul>
             </div>
           </div>
