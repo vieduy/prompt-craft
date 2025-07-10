@@ -4,6 +4,7 @@ from typing import List, Optional, Union, Dict, Any
 import asyncpg
 import databutton as db
 import json
+import os
 from openai import AzureOpenAI
 from app.auth import AuthorizedUser
 from app.libs.database import get_db_connection
@@ -44,6 +45,7 @@ class LessonWithContent(BaseModel):
     estimated_duration: int
     learning_objectives: List[str]
     workplace_scenario: str
+    order_index: int
     progress_status: str
     progress_percentage: int
     content_sections: List[LessonContentSection]
@@ -70,7 +72,7 @@ async def get_lesson_with_content(lesson_id: int, user: AuthorizedUser) -> Lesso
         lesson_query = """
         SELECT 
             l.id, l.title, l.description, l.category_id, l.difficulty_level,
-            l.estimated_duration, l.learning_objectives, l.workplace_scenario,
+            l.estimated_duration, l.learning_objectives, l.workplace_scenario, l.order_index,
             COALESCE(up.status, 'not_started') as progress_status,
             COALESCE(up.progress_percentage, 0) as progress_percentage
         FROM lessons l
@@ -112,21 +114,7 @@ async def get_lesson_with_content(lesson_id: int, user: AuthorizedUser) -> Lesso
                     is_completed=row["is_completed"] or False,
                 )
             )
-        print(
-            LessonWithContent(
-                id=lesson_row["id"],
-                title=lesson_row["title"],
-                description=lesson_row["description"],
-                category_id=lesson_row["category_id"],
-                difficulty_level=lesson_row["difficulty_level"],
-                estimated_duration=lesson_row["estimated_duration"],
-                learning_objectives=lesson_row["learning_objectives"],
-                workplace_scenario=lesson_row["workplace_scenario"],
-                progress_status=lesson_row["progress_status"],
-                progress_percentage=lesson_row["progress_percentage"],
-                content_sections=content_sections,
-            )
-        )
+
         return LessonWithContent(
             id=lesson_row["id"],
             title=lesson_row["title"],
@@ -134,8 +122,9 @@ async def get_lesson_with_content(lesson_id: int, user: AuthorizedUser) -> Lesso
             category_id=lesson_row["category_id"],
             difficulty_level=lesson_row["difficulty_level"],
             estimated_duration=lesson_row["estimated_duration"],
-            learning_objectives=lesson_row["learning_objectives"],
+            learning_objectives=json.loads(lesson_row["learning_objectives"]) if os.getenv('DB_LOCAL') == 'True' else lesson_row["learning_objectives"],
             workplace_scenario=lesson_row["workplace_scenario"],
+            order_index=lesson_row["order_index"],
             progress_status=lesson_row["progress_status"],
             progress_percentage=lesson_row["progress_percentage"],
             content_sections=content_sections,

@@ -61,11 +61,14 @@ const ChallengeBrief: React.FC<ChallengeBriefProps> = ({ challenge }) => {
         <div>
             <h4 className="font-semibold mb-2 text-gray-800">Scoring Keys:</h4>
             <div className="flex flex-wrap gap-2">
-              {Object.entries(challenge.scoring_criteria).map(([criterion, points]) => (
-                <Badge key={criterion} variant="secondary" className="px-2 py-1">
-                  {criterion.replace(/_/g, ' ')}: <span className="font-mono ml-1.5">{points as number} pts</span>
-                </Badge>
-              ))}
+              {Object.entries(challenge.scoring_criteria).map(([criterion, criterionData]) => {
+                const data = criterionData as { max_score: number; description: string };
+                return (
+                  <Badge key={criterion} variant="secondary" className="px-2 py-1" title={data.description}>
+                    {criterion.replace(/_/g, ' ')}: <span className="font-mono ml-1.5">{data.max_score} pts</span>
+                  </Badge>
+                );
+              })}
             </div>
         </div>
       </CardContent>

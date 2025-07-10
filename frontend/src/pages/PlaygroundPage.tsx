@@ -1,16 +1,24 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Sparkles, Loader2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import brain from 'brain';
+import { useUser } from "@stackframe/react";
+import { auth } from "app/auth";
 
 const PlaygroundPage = () => {
   const [prompt, setPrompt] = useState('');
   const [response, setResponse] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const user = useUser();
+
+  // Update backend profile if user is authenticated
+  useEffect(() => {
+    // Note: Profile updates are now handled centrally in AppWrapper to prevent excessive API calls
+  }, []);
 
   const handleGenerate = async () => {
     if (!prompt.trim() || isLoading) return;

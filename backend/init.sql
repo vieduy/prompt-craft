@@ -10,9 +10,24 @@ CREATE TABLE categories (
     name VARCHAR(255) NOT NULL,
     description TEXT,
     icon VARCHAR(100),
-    color VARCHAR(7),
+    color VARCHAR(50),
     difficulty_level VARCHAR(50),
-    order_index INTEGER NOT NULL DEFAULT 0,
+    order_index INTEGER DEFAULT 0,
+    lesson_count INTEGER DEFAULT 0,
+    completed_lessons INTEGER DEFAULT 0,
+    progress_percentage DECIMAL(5,2) DEFAULT 0.0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Users table to store profile information from Stack Auth
+CREATE TABLE users (
+    id VARCHAR(255) PRIMARY KEY, -- This will be the user.sub from JWT
+    name VARCHAR(255),
+    email VARCHAR(255),
+    picture_url TEXT,
+    first_seen_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    last_seen_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

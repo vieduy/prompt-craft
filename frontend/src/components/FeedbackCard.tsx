@@ -14,7 +14,7 @@ const FeedbackCard: React.FC<FeedbackCardProps> = ({ session, challenge }) => {
   const getScoreColor = (score: number, maxScore: number) => {
     const percentage = (score / maxScore) * 100;
     if (percentage >= 80) return "text-green-600";
-    if (percentage >= 50) return "text-yellow-600";
+    if (percentage > 40) return "text-yellow-600";
     return "text-red-600";
   };
 
@@ -33,7 +33,7 @@ const FeedbackCard: React.FC<FeedbackCardProps> = ({ session, challenge }) => {
             className={`text-6xl font-bold mb-2 bg-gradient-to-r ${getScoreColor(
               session.total_score,
               challenge.max_score
-            )} bg-clip-text text-transparent`}
+            )} bg-clip-text`}
           >
             {session.total_score}
             <span className="text-3xl text-gray-400">

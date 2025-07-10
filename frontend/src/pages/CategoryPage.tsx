@@ -5,10 +5,13 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen, BarChart, Star } from "lucide-react";
 import { Toaster, toast } from "sonner";
 import { useLessonsByCategory, useCategories, usePrefetchData } from "../hooks/useData";
+import { useUser } from "@stackframe/react";
+import { auth } from "app/auth";
 
 const CategoryPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const user = useUser();
   const categoryId = searchParams.get("id");
   const categoryNameFromUrl = searchParams.get("name");
   
@@ -21,6 +24,11 @@ const CategoryPage = () => {
   // Find category name from cached categories if not provided in URL
   const category = categories?.find(cat => cat.id === parseInt(categoryId || "0"));
   const categoryName = categoryNameFromUrl || category?.name || "Category";
+
+  // Update backend profile if user is authenticated
+  React.useEffect(() => {
+    // Note: Profile updates are now handled centrally in AppWrapper to prevent excessive API calls
+  }, []);
 
   const handleLessonClick = (lessonId: number) => {
     navigate(`/LessonPage?id=${lessonId}`);
@@ -159,7 +167,7 @@ const CategoryPage = () => {
                 </CardHeader>
                 <CardContent className="p-6 pt-0 flex-grow">
                   <p className="text-gray-600 line-clamp-3">
-                    {lesson.description}
+                    {lesson.preview_content}
                   </p>
                 </CardContent>
                 <div className="p-6 pt-0">

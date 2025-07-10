@@ -50,6 +50,7 @@ import {
   Tooltip,
   Cell,
 } from "recharts";
+import { auth } from "../app/auth/auth";
 
 const Dashboard = () => {
   const { user } = useUserGuardContext();
@@ -160,6 +161,9 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Update backend profile with real Stack Auth data
+        await auth.updateBackendProfile();
+        
         const [dataRes, roadmapRes] = await Promise.all([
           brain.get_dashboard_data(),
           brain.get_my_roadmap(),

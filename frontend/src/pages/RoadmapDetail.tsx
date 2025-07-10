@@ -1,37 +1,58 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import brain from "brain";
-import { toast } from "sonner";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowLeft, CheckCircle, Clock, Star } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import brain from "brain";
+import { useUser } from "@stackframe/react";
+import { auth } from "app/auth";
+import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CheckCircle, Circle } from "lucide-react";
+import { Circle } from "lucide-react";
 import type { RoadmapDetail } from "types";
 
-const RoadmapDetailPage = () => {
-  const { roadmapId } = useParams<{ roadmapId: string }>();
-  const [roadmap, setRoadmap] = useState<RoadmapDetail | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+interface Roadmap {
+  id: number;
+  title: string;
+  description: string;
+  difficulty_level: string;
+  estimated_duration_hours: number;
+  is_enrolled: boolean;
+}
+
+const RoadmapDetail = () => {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const user = useUser();
+  const roadmapId = searchParams.get("id");
+  const [roadmap, setRoadmap] = useState<Roadmap | null>(null);
+  const [loading, setLoading] = useState(true);
   const [isEnrolling, setIsEnrolling] = useState(false);
 
+  // Update backend profile if user is authenticated
   useEffect(() => {
-    if (!roadmapId) return;
+    // Note: Profile updates are now handled centrally in AppWrapper to prevent excessive API calls
+  }, []);
 
-    const fetchRoadmapDetails = async () => {
-      try {
-        const response = await brain.get_roadmap_details({ roadmapId: parseInt(roadmapId) });
-        const data = await response.json();
-        setRoadmap(data);
-      } catch (error) {
-        console.error("Failed to fetch roadmap details:", error);
-        toast.error("Could not load roadmap details.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchRoadmapDetails();
+  useEffect(() => {
+    if (roadmapId) {
+      fetchRoadmapDetails();
+    }
   }, [roadmapId]);
+
+  const fetchRoadmapDetails = async () => {
+    try {
+      const response = await brain.get_roadmap_details({ roadmapId: parseInt(roadmapId) });
+      const data = await response.json();
+      setRoadmap(data);
+    } catch (error) {
+      console.error("Failed to fetch roadmap details:", error);
+      toast.error("Could not load roadmap details.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleEnroll = async () => {
     if (!roadmapId) return;
@@ -49,7 +70,7 @@ const RoadmapDetailPage = () => {
     }
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="p-8">
         <Skeleton className="h-12 w-1/2 mb-4" />
@@ -114,5 +135,5 @@ const RoadmapDetailPage = () => {
   );
 };
 
-export default RoadmapDetailPage;
+export default RoadmapDetail;
 

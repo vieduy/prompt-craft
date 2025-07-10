@@ -42,7 +42,6 @@ def import_api_routers() -> APIRouter:
     api_module_prefix = "app.apis."
 
     for name in api_names:
-        print(f"Importing API: {name}")
         try:
             api_module = __import__(api_module_prefix + name, fromlist=[name])
             api_router = getattr(api_module, "router", None)
@@ -58,8 +57,6 @@ def import_api_routers() -> APIRouter:
         except Exception as e:
             print(e)
             continue
-
-    print(routes.routes)
 
     return routes
 
@@ -96,19 +93,11 @@ def create_app() -> FastAPI:
     )
     
     app.include_router(import_api_routers())
-
-    for route in app.routes:
-        if hasattr(route, "methods"):
-            for method in route.methods:
-                print(f"{method} {route.path}")
-
     auth_config_data = get_firebase_config()
 
     if auth_config_data is None:
-        print("No auth config found")
         app.state.auth_config = None
     else:
-        print("Auth config found")
         # Handle both Firebase and Stack Auth configurations
         if "projectId" in auth_config_data and "jwksUrl" in auth_config_data:
             # Stack Auth configuration
@@ -117,7 +106,6 @@ def create_app() -> FastAPI:
                 "audience": auth_config_data["projectId"],
                 "header": "authorization",
             }
-            print("Using Stack Auth configuration")
         else:
             # Firebase configuration
             auth_config = {
@@ -125,7 +113,6 @@ def create_app() -> FastAPI:
                 "audience": auth_config_data["projectId"],
                 "header": "authorization",
             }
-            print("Using Firebase configuration")
 
         app.state.auth_config = AuthConfig(**auth_config)
 

@@ -28,7 +28,7 @@ class PracticeSession(BaseModel):
     ai_response: Optional[str] = None
     total_score: int
     max_score: int
-    scoring_details: Dict[str, Any] = {}
+    scoring_breakdown: Dict[str, Any] = {}  # Changed from scoring_details to scoring_breakdown
     submitted_at: str
 
 @router.get("/analytics/challenge/{challenge_id}")
@@ -65,10 +65,10 @@ async def get_user_challenge_analytics(challenge_id: int, user: AuthorizedUser) 
                 id=row['id'],
                 challenge_id=row['challenge_id'],
                 user_prompt=row['user_prompt'],
-                ai_response=row['ai_response'],
+                ai_response=row['feedback'],  # Changed from ai_response to feedback to match database
                 total_score=row['total_score'],
                 max_score=row['max_score'],
-                scoring_details=json.loads(row['scoring_details']) if row['scoring_details'] else {},
+                scoring_breakdown=json.loads(row['scoring_breakdown']) if row['scoring_breakdown'] else {},  # Fixed column name
                 submitted_at=row['created_at'].isoformat()
             ) for row in sessions_rows
         ]

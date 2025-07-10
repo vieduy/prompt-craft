@@ -1,20 +1,18 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  ArrowRight,
-  BookOpen,
+import React, { useEffect, useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { 
+  ChevronRight, 
+  Book, 
+  Clock, 
+  ArrowLeft, 
+  BookOpen, 
+  Star, 
+  Users, 
+  Zap, 
+  Award,
+  Rocket,
   BrainCircuit,
   Lightbulb,
-  Rocket,
-  Zap,
-  Brain,
-  Loader2,
-  Target,
-  Star,
-  Users,
-  Folder,
   PenTool,
   Mail,
   Presentation,
@@ -24,9 +22,14 @@ import {
   Share2,
   Calendar,
   Search,
-  Book,
-  ArrowLeft
+  ArrowRight
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { useUser } from "@stackframe/react";
+import brain from "brain";
+import { auth } from "app/auth";
 import { useCategories, usePrefetchData } from "../hooks/useData";
 import { Progress } from "@/components/ui/progress";
 
@@ -52,6 +55,12 @@ const Lessons = () => {
   const navigate = useNavigate();
   const { data: categories, isLoading, error } = useCategories();
   const { prefetchLessonsByCategory } = usePrefetchData();
+  const user = useUser();
+  const [categoryId, setCategoryId] = useState<number | null>(null);
+
+  useEffect(() => {
+    // Note: Profile updates are now handled centrally with cooldown to prevent excessive API calls
+  }, [user]);
 
   const handleCategoryClick = (categoryId: number, categoryName: string) => {
     navigate(`/category-page?id=${categoryId}&name=${encodeURIComponent(categoryName)}`);

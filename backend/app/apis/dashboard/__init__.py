@@ -7,6 +7,7 @@ import json
 from datetime import datetime, timedelta
 from app.auth import AuthorizedUser
 from app.libs.database import get_db_connection
+import os
 
 router = APIRouter(prefix="/dashboard")
 
@@ -101,6 +102,9 @@ async def get_dashboard_data(user: AuthorizedUser) -> DashboardData:
     """Get comprehensive dashboard data for the user"""
     conn = await get_db()
     try:
+        # Store/update user profile information
+        # await upsert_user_profile(conn, user)
+        
         # Get basic stats
         stats = await get_user_stats(conn, user.sub)
         
@@ -438,6 +442,11 @@ async def get_recommended_lessons(conn, user_id: str) -> List[RecommendedLesson]
         elif lesson['difficulty_level'] == 'advanced':
             reason = "Master advanced concepts"
         
+        if os.getenv('DB_LOCAL') == 'False':
+            learning_objectives = lesson['learning_objectives'] or []
+        else:
+            learning_objectives = json.loads(lesson['learning_objectives']) or []
+
         recommendations.append(RecommendedLesson(
             id=lesson['id'],
             title=lesson['title'],
@@ -446,7 +455,7 @@ async def get_recommended_lessons(conn, user_id: str) -> List[RecommendedLesson]
             difficulty_level=lesson['difficulty_level'],
             estimated_duration=lesson['estimated_duration'],
             reason=reason,
-            learning_objectives=lesson['learning_objectives'] or [],
+            learning_objectives=learning_objectives,
             progress_status=lesson['progress_status']
         ))
     

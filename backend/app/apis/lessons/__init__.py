@@ -4,6 +4,7 @@ from typing import List, Optional, Dict, Any
 import asyncpg
 import databutton as db
 import json
+import os
 from app.auth import AuthorizedUser
 from app.libs.database import get_db_connection
 
@@ -73,6 +74,9 @@ async def get_categories(user: AuthorizedUser) -> List[Category]:
     """Get all lesson categories with user progress"""
     conn = await get_db()
     try:
+        # Store/update user profile information
+        # await upsert_user_profile(conn, user)
+        
         # Get categories with lesson counts and user progress
         query = """
         SELECT 
@@ -117,6 +121,9 @@ async def get_lessons_by_category(category_id: int, user: AuthorizedUser) -> Lis
     """Get lessons for a specific category with user progress"""
     conn = await get_db()
     try:
+        # Store/update user profile information
+        # await upsert_user_profile(conn, user)
+        
         query = """
         SELECT 
             l.id, l.title, l.description, l.category_id, l.difficulty_level,
@@ -144,7 +151,7 @@ async def get_lessons_by_category(category_id: int, user: AuthorizedUser) -> Lis
                 difficulty_level=row['difficulty_level'],
                 estimated_duration=row['estimated_duration'],
                 preview_content=row['preview_content'],
-                learning_objectives=row['learning_objectives'],
+                learning_objectives=json.loads(row['learning_objectives']) if os.getenv('DB_LOCAL') == 'True' else row['learning_objectives'],
                 workplace_scenario=row['workplace_scenario'],
                 order_index=row['order_index'],
                 is_bookmarked=row['is_bookmarked'],

@@ -1,3 +1,4 @@
+import logging
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
@@ -8,6 +9,10 @@ from openai import AzureOpenAI
 from app.auth import AuthorizedUser
 from app.libs.database import get_db_connection
 import datetime
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/practice")
 
@@ -103,6 +108,23 @@ class LeaderboardEntry(BaseModel):
     achieved_at: str
     user_name: Optional[str] = None
 
+class UserProfileUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+
+@router.post("/profile")
+async def update_user_profile(profile: UserProfileUpdate, user: AuthorizedUser):
+    """Update user profile information with data from frontend"""
+    conn = await get_db()
+    try:
+        await upsert_user_profile(conn, user, profile.name, profile.email)
+        return {"success": True, "message": "Profile updated successfully"}
+    except Exception as e:
+        logger.error(f"Profile update failed for user: {user.sub}, error: {e}")
+        raise
+    finally:
+        await conn.close()
+
 @router.get("/challenges")
 async def get_practice_challenges(difficulty: Optional[str] = None, scenario_type: Optional[str] = None) -> List[PracticeChallenge]:
     """Get practice challenges with optional filtering"""
@@ -147,7 +169,7 @@ async def get_practice_challenges(difficulty: Optional[str] = None, scenario_typ
 async def submit_prompt(body: PromptSubmission, user: AuthorizedUser) -> PracticeSession:
     """Submit a prompt for AI assessment and scoring"""
     conn = await get_db()
-    try:
+    try:        
         # Get challenge details
         challenge = await conn.fetchrow(
             "SELECT title, context, target_outcome, scoring_criteria, max_score FROM practice_challenges WHERE id = $1",
@@ -211,7 +233,7 @@ You are an expert AI prompt engineering coach. Your task is to evaluate a user's
             assessment_result = json.loads(response.choices[0].message.content)
             
         except Exception as e:
-            print(f"Error calling OpenAI: {e}")
+            logger.error(f"Error calling OpenAI: {e}")
             raise ValueError("Failed to get assessment from AI")
         
         # Calculate total score
@@ -219,13 +241,14 @@ You are an expert AI prompt engineering coach. Your task is to evaluate a user's
         # Save session to database
         new_session_id = await conn.fetchval(
             """
-            INSERT INTO practice_sessions (user_id, challenge_id, user_prompt, feedback, total_score, scoring_breakdown, improvement_suggestions, session_duration_seconds)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            INSERT INTO practice_sessions (user_id, challenge_id, user_prompt, prompt_text, feedback, total_score, scoring_breakdown, improvement_suggestions, session_duration_seconds)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
             RETURNING id
             """,
             user.sub,
             body.challenge_id,
             body.user_prompt,
+            body.user_prompt,  # Also populate prompt_text for backward compatibility
             assessment_result.get('overall_feedback'),
             total_score,
             json.dumps(assessment_result.get('scoring_breakdown', {})),
@@ -253,7 +276,7 @@ You are an expert AI prompt engineering coach. Your task is to evaluate a user's
             submitted_at=datetime.datetime.now().isoformat()
         )
     except Exception as e:
-        print(f"Error in submit_prompt: {e}")
+        logger.error(f"Error in submit_prompt: {e}")
         raise
     finally:
         await conn.close()
@@ -419,8 +442,44 @@ async def get_practice_stats(user: AuthorizedUser) -> PracticeStats:
     finally:
         await conn.close()
 
+# Helper function to ensure user profile is stored
+async def upsert_user_profile(conn, user: AuthorizedUser, name: Optional[str] = None, email: Optional[str] = None):
+    """Store or update user profile information in the database"""   
+    # Use provided name if available, otherwise use JWT name, otherwise generate fallback
+    if name:
+        display_name = name
+    elif user.name:
+        display_name = user.name
+    else:
+        # Generate a fallback display name from user ID
+        if len(user.sub) >= 8:
+            display_name = f"User {user.sub[:8]}"
+        else:
+            display_name = f"User {user.sub}"
+    
+    # Use provided email if available, otherwise use JWT email
+    profile_email = email or user.email
+    try:
+        result = await conn.execute(
+            """
+            INSERT INTO users (id, name, email, last_seen_at)
+            VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
+            ON CONFLICT (id) 
+            DO UPDATE SET
+                name = COALESCE($2, users.name),
+                email = COALESCE($3, users.email),
+                last_seen_at = CURRENT_TIMESTAMP,
+                updated_at = CURRENT_TIMESTAMP
+            """,
+            user.sub, display_name, profile_email
+        )
+        
+    except Exception as e:
+        logger.error(f"Database error in upsert_user_profile: {e}")
+        raise
+
 @router.get("/leaderboard/{challenge_id}")
-async def get_challenge_leaderboard(challenge_id: int, limit: int = 10) -> List[LeaderboardEntry]:
+async def get_challenge_leaderboard(challenge_id: int, limit: int = 10, user: AuthorizedUser = None) -> List[LeaderboardEntry]:
     """Get leaderboard for a specific challenge"""
     conn = await get_db()
     try:
@@ -431,14 +490,10 @@ async def get_challenge_leaderboard(challenge_id: int, limit: int = 10) -> List[
             pc.title as challenge_title,
             le.score,
             le.achieved_at,
-            -- Format user_id for display (you can get actual username from frontend auth)
-            CASE 
-                WHEN le.user_id ~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' 
-                THEN 'User-' || substring(le.user_id from 1 for 8)
-                ELSE le.user_id 
-            END as user_name
+            COALESCE(u.name, 'User ' || substring(le.user_id from 1 for 8)) as user_name
         FROM leaderboard_entries le
         JOIN practice_challenges pc ON le.challenge_id = pc.id
+        LEFT JOIN users u ON le.user_id = u.id
         WHERE le.challenge_id = $1
         ORDER BY le.score DESC, le.achieved_at ASC
         LIMIT $2
@@ -556,17 +611,23 @@ async def update_leaderboard(conn, user_id: str, challenge_id: int, session_id: 
 
     # If the user is not on the leaderboard for this challenge, or their new score is higher
     if not current_score_row or score > current_score_row['score']:
-        await conn.execute(
-            """
-            INSERT INTO leaderboard_entries (user_id, challenge_id, session_id, score, achieved_at)
-            VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
-            ON CONFLICT (user_id, challenge_id)
-            DO UPDATE SET
-                session_id = EXCLUDED.session_id,
-                score = EXCLUDED.score,
-                achieved_at = EXCLUDED.achieved_at
-            WHERE EXCLUDED.score > leaderboard_entries.score;
-            """,
-            user_id, challenge_id, session_id, score
-        )
+        if current_score_row:
+            # Update existing record
+            await conn.execute(
+                """
+                UPDATE leaderboard_entries 
+                SET session_id = $1, score = $2, achieved_at = CURRENT_TIMESTAMP
+                WHERE user_id = $3 AND challenge_id = $4
+                """,
+                session_id, score, user_id, challenge_id
+            )
+        else:
+            # Insert new record
+            await conn.execute(
+                """
+                INSERT INTO leaderboard_entries (user_id, challenge_id, session_id, score, achieved_at)
+                VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
+                """,
+                user_id, challenge_id, session_id, score
+            )
 

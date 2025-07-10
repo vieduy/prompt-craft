@@ -2,20 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserGuardContext } from 'app/auth';
 import brain from 'brain';
+import { auth } from '../app/auth/auth';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { toast } from 'sonner';
 import { 
   Trophy, 
   Target, 
@@ -40,7 +40,10 @@ import {
   Filter,
   ArrowLeft,
   MessageSquare,
-  RefreshCw
+  RefreshCw,
+  Mail,
+  Presentation,
+  FileText
 } from 'lucide-react';
 import ChallengeBrief from 'components/ChallengeBrief';
 import FeedbackCard from 'components/FeedbackCard';
@@ -63,7 +66,9 @@ import type {
   PortfolioItem, 
   PracticeStats,
   LeaderboardEntry,
-  UserChallengeAnalytics
+  UserChallengeAnalytics,
+  PromptSubmission,
+  SaveToPortfolioRequest
 } from 'types';
 
 const PracticePlayground = () => {
@@ -132,7 +137,10 @@ const PracticePlayground = () => {
 
   const loadInitialData = async () => {
     try {
-      const response = await brain.get_practice_challenges();
+      // Update backend profile with real Stack Auth data
+      await auth.updateBackendProfile();
+      
+      const response = await brain.get_practice_challenges({});
       const data = await response.json();
       setChallenges(data);
       
@@ -575,48 +583,56 @@ const PracticePlayground = () => {
               <h2 className="text-2xl font-bold mb-4">My Portfolio</h2>
               {portfolio.length > 0 ? (
                 <div className="grid md:grid-cols-2 gap-6">
-                  {portfolio.map((item) => (
-                    <Card key={item.id} className="bg-white/80">
-                      <CardHeader>
-                        <div className="flex items-start justify-between">
-                          <CardTitle className="flex items-center gap-2 font-bold">
-                            {item.is_favorite && <Star className="h-4 w-4 text-yellow-500 fill-current" />}
-                            {item.title}
-                          </CardTitle>
-                          {item.score && (
-                            <Badge variant="secondary" className="font-mono">
-                              {item.score} pts
-                            </Badge>
-                          )}
-                        </div>
-                        {item.description && (
-                          <CardDescription className="text-sm">{item.description}</CardDescription>
-                        )}
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-3">
-                          <div>
-                            <h5 className="font-medium text-xs mb-1 text-gray-500">PROMPT</h5>
-                            <p className="text-sm text-gray-800 bg-gray-500/5 p-3 rounded-md font-mono">
-                              {item.prompt_text}
-                            </p>
+                  {portfolio.map((item) => {
+                    // Find the max score from challenges (defaulting to 100 if not found)
+                    const relatedChallenge = challenges.find(c => 
+                      sessions.find(s => s.id === item.id && s.challenge_id === c.id)
+                    );
+                    const maxScore = relatedChallenge?.max_score || 100;
+                    
+                    return (
+                      <Card key={item.id} className="bg-white/80">
+                        <CardHeader>
+                          <div className="flex items-start justify-between">
+                            <CardTitle className="flex items-center gap-2 font-bold">
+                              {item.is_favorite && <Star className="h-4 w-4 text-yellow-500 fill-current" />}
+                              {item.title}
+                            </CardTitle>
+                            {item.score && (
+                              <Badge variant="secondary" className="font-mono">
+                                {item.score}/{maxScore} pts
+                              </Badge>
+                            )}
                           </div>
-                          {item.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1">
-                              {item.tags.map((tag, index) => (
-                                <Badge key={index} variant="outline" className="text-xs">
-                                  {tag}
-                                </Badge>
-                              ))}
+                          {item.description && (
+                            <CardDescription className="text-sm">{item.description}</CardDescription>
+                          )}
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-3">
+                            <div>
+                              <h5 className="font-medium text-xs mb-1 text-gray-500">PROMPT</h5>
+                              <p className="text-sm text-gray-800 bg-gray-500/5 p-3 rounded-md font-mono">
+                                {item.prompt_text}
+                              </p>
                             </div>
-                          )}
-                          <div className="text-xs text-gray-400 pt-2 border-t border-gray-200/50">
-                            Saved on {new Date(item.created_at).toLocaleDateString()}
+                            {item.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1">
+                                {item.tags.map((tag, index) => (
+                                  <Badge key={index} variant="outline" className="text-xs">
+                                    {tag}
+                                  </Badge>
+                                ))}
+                              </div>
+                            )}
+                            <div className="text-xs text-gray-400 pt-2 border-t border-gray-200/50">
+                              Saved on {new Date(item.created_at).toLocaleDateString()}
+                            </div>
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="text-center py-12">
@@ -643,8 +659,8 @@ const PracticePlayground = () => {
               <h2 className="text-2xl font-bold mb-4">My Performance Stats</h2>
               {stats ? (
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                  <StatCard icon={<Trophy className="text-yellow-500"/>} label="Best Score" value={stats.best_score} />
-                  <StatCard icon={<TrendingUp className="text-green-500"/>} label="Avg Score" value={stats.average_score.toFixed(1)} />
+                  <StatCard icon={<Trophy className="text-yellow-500"/>} label="Best Score" value={`${stats.best_score}/100`} />
+                  <StatCard icon={<TrendingUp className="text-green-500"/>} label="Avg Score" value={`${stats.average_score.toFixed(1)}/100`} />
                   <StatCard icon={<Zap className="text-blue-500"/>} label="Challenges Done" value={stats.challenges_completed} />
                   <StatCard icon={<Timer className="text-purple-500"/>} label="Practice Time" value={`${stats.total_practice_time_minutes} min`} />
                 </div>
