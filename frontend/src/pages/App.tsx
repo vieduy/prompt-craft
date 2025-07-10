@@ -23,13 +23,13 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { useUser, UserButton } from "@stackframe/react";
-import brain from "brain";
+import { UserButton } from "@stackframe/react";
 import { useEffect, useState } from "react";
 import { Category } from "types";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { auth } from "app/auth";
+import { useCategories } from "@/hooks/useData";
+import { useAuthOptimization } from "@/hooks/useAuthOptimization";
 
 const iconMapping: { [key: string]: React.ElementType } = {
   Rocket: Rocket,
@@ -42,9 +42,8 @@ const iconMapping: { [key: string]: React.ElementType } = {
 
 const App = () => {
   const navigate = useNavigate();
-  const user = useUser();
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
+  const user = useAuthOptimization();
+  const { data: categories, isLoading: loading } = useCategories();
   const [animatedText, setAnimatedText] = useState("");
   const fullText = "Transform AI from intimidating to empowering";
 
@@ -59,33 +58,8 @@ const App = () => {
       }
     }, 50);
 
-    const fetchCategories = async () => {
-      try {
-        const response = await brain.get_categories();
-        const data = await response.json();
-        setCategories(data);
-      } catch (error) {
-        console.error("Failed to fetch categories:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    // Update backend profile if user is authenticated
-    const updateProfile = async () => {
-      if (user) {
-        try {
-          await auth.updateBackendProfile();
-        } catch (error) {
-          console.error("Failed to update profile in App:", error);
-        }
-      }
-    };
-
-    fetchCategories();
-    updateProfile();
     return () => clearInterval(timer);
-  }, [user]);
+  }, []);
 
   const handleGetStarted = () => {
     if (user) {
@@ -287,7 +261,7 @@ const App = () => {
                   </Card>
                 ))
               ) : (
-                categories.slice(0, 4).map((category, index) => {
+                categories?.slice(0, 4).map((category, index) => {
                   const Icon = iconMapping[category.icon] || iconMapping.Default;
                   const isEven = index % 2 === 0;
                   const stepColors = [

@@ -30,11 +30,6 @@ const RoadmapDetail = () => {
   const [loading, setLoading] = useState(true);
   const [isEnrolling, setIsEnrolling] = useState(false);
 
-  // Update backend profile if user is authenticated
-  useEffect(() => {
-    // Note: Profile updates are now handled centrally in AppWrapper to prevent excessive API calls
-  }, []);
-
   useEffect(() => {
     if (roadmapId) {
       fetchRoadmapDetails();

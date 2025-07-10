@@ -58,10 +58,6 @@ const Lessons = () => {
   const user = useUser();
   const [categoryId, setCategoryId] = useState<number | null>(null);
 
-  useEffect(() => {
-    // Note: Profile updates are now handled centrally with cooldown to prevent excessive API calls
-  }, [user]);
-
   const handleCategoryClick = (categoryId: number, categoryName: string) => {
     navigate(`/category-page?id=${categoryId}&name=${encodeURIComponent(categoryName)}`);
   };

@@ -99,6 +99,16 @@ const PracticePlayground = () => {
   const [showLeaderboardPreview, setShowLeaderboardPreview] = useState(false);
   const [leaderboardSelectedChallengeId, setLeaderboardSelectedChallengeId] = useState<string>("");
   const [analyticsSelectedChallengeId, setAnalyticsSelectedChallengeId] = useState<number | null>(null);
+  
+  // Add state to track loaded data to prevent redundant API calls
+  const [dataLoaded, setDataLoaded] = useState({
+    challenges: false,
+    sessions: false,
+    portfolio: false,
+    stats: false,
+    leaderboard: new Set<number>(),
+    analytics: new Set<number>()
+  });
 
   useEffect(() => {
     loadInitialData();
@@ -127,59 +137,70 @@ const PracticePlayground = () => {
     }
   }, [challengeSelectedFromLeaderboard]);
 
-  useEffect(() => {
-    // Auto-select current challenge for analytics when switching to stats tab
-    if (selectedChallenge && !analyticsSelectedChallengeId) {
-      setAnalyticsSelectedChallengeId(selectedChallenge.id);
-      loadAnalytics(selectedChallenge.id);
-    }
-  }, [selectedChallenge, analyticsSelectedChallengeId]);
-
   const loadInitialData = async () => {
-    try {
-      // Update backend profile with real Stack Auth data
-      await auth.updateBackendProfile();
-      
-      const response = await brain.get_practice_challenges({});
-      const data = await response.json();
-      setChallenges(data);
-      
-      // Load initial stats
-      await loadStats();
-    } catch (error) {
-      toast.error('Failed to load challenges');
+    // Only load challenges if not already loaded
+    if (!dataLoaded.challenges) {
+      try {
+        const response = await brain.get_practice_challenges({});
+        const data = await response.json();
+        setChallenges(data);
+        setDataLoaded(prev => ({ ...prev, challenges: true }));
+      } catch (error) {
+        toast.error('Failed to load challenges');
+      }
     }
 
-    try {
-      const response = await brain.get_practice_sessions({ limit: 20 });
-      const data = await response.json();
-      setSessions(data);
-    } catch (error) {
-      console.error('Failed to load sessions:', error);
+    // Only load sessions if not already loaded
+    if (!dataLoaded.sessions) {
+      try {
+        const response = await brain.get_practice_sessions({ limit: 20 });
+        const data = await response.json();
+        setSessions(data);
+        setDataLoaded(prev => ({ ...prev, sessions: true }));
+      } catch (error) {
+        console.error('Failed to load sessions:', error);
+      }
     }
 
-    try {
-      const response = await brain.get_portfolio();
-      const data = await response.json();
-      setPortfolio(data);
-    } catch (error) {
-      console.error('Failed to load portfolio:', error);
+    // Only load portfolio if not already loaded
+    if (!dataLoaded.portfolio) {
+      try {
+        const response = await brain.get_portfolio();
+        const data = await response.json();
+        setPortfolio(data);
+        setDataLoaded(prev => ({ ...prev, portfolio: true }));
+      } catch (error) {
+        console.error('Failed to load portfolio:', error);
+      }
     }
 
-    try {
-      const response = await brain.get_practice_stats();
-      const data = await response.json();
-      setStats(data);
-    } catch (error) {
-      console.error('Failed to load stats:', error);
+    // Only load stats if not already loaded
+    if (!dataLoaded.stats) {
+      try {
+        const response = await brain.get_practice_stats();
+        const data = await response.json();
+        setStats(data);
+        setDataLoaded(prev => ({ ...prev, stats: true }));
+      } catch (error) {
+        console.error('Failed to load stats:', error);
+      }
     }
   };
 
   const loadLeaderboard = async (challengeId: number) => {
+    // Only load if not already loaded for this challenge
+    if (dataLoaded.leaderboard.has(challengeId)) {
+      return;
+    }
+    
     try {
       const response = await brain.get_challenge_leaderboard({ challengeId });
       const data = await response.json();
       setLeaderboard(data);
+      setDataLoaded(prev => ({ 
+        ...prev, 
+        leaderboard: new Set([...prev.leaderboard, challengeId]) 
+      }));
     } catch (error) {
       console.error('Failed to load leaderboard:', error);
       toast.error("Could not load leaderboard.");
@@ -187,10 +208,19 @@ const PracticePlayground = () => {
   };
 
   const loadAnalytics = async (challengeId: number) => {
+    // Only load if not already loaded for this challenge
+    if (dataLoaded.analytics.has(challengeId)) {
+      return;
+    }
+    
     try {
       const response = await brain.get_user_challenge_analytics({ challengeId });
       const data = await response.json();
       setAnalytics(data);
+      setDataLoaded(prev => ({ 
+        ...prev, 
+        analytics: new Set([...prev.analytics, challengeId]) 
+      }));
     } catch (error) {
       console.error("Failed to load analytics:", error);
       // Set analytics to null to show loading state instead of error
@@ -199,14 +229,41 @@ const PracticePlayground = () => {
     }
   };
 
-  const loadStats = async () => {
+  const loadStats = async (forceRefresh = false) => {
+    // Only load if not already loaded or if force refresh is requested
+    if (!dataLoaded.stats && !forceRefresh) {
+      return;
+    }
+    
     try {
       const response = await brain.get_practice_stats();
       const data = await response.json();
       setStats(data);
+      setDataLoaded(prev => ({ ...prev, stats: true }));
     } catch (error) {
       console.error('Failed to load stats:', error);
     }
+  };
+
+  // Function to clear cached data for specific challenge
+  const clearChallengeCache = (challengeId: number) => {
+    setDataLoaded(prev => ({
+      ...prev,
+      leaderboard: new Set([...prev.leaderboard].filter(id => id !== challengeId)),
+      analytics: new Set([...prev.analytics].filter(id => id !== challengeId))
+    }));
+  };
+
+  // Function to clear all cached data
+  const clearAllCache = () => {
+    setDataLoaded({
+      challenges: false,
+      sessions: false,
+      portfolio: false,
+      stats: false,
+      leaderboard: new Set<number>(),
+      analytics: new Set<number>()
+    });
   };
 
   const handleChallengeSelect = (challengeId: string) => {
@@ -215,8 +272,7 @@ const PracticePlayground = () => {
     setCurrentSession(null);
     setStartTime(new Date());
     setShowLeaderboardPreview(true); // Show preview on new selection
-    loadLeaderboard(Number(challengeId));
-    loadAnalytics(Number(challengeId));
+    // Remove redundant API calls - they're handled by useEffect when activeChallengeId changes
     // This will be handled by the new layout, so we no longer force a tab switch.
   };
 
@@ -241,14 +297,10 @@ const PracticePlayground = () => {
 
       setCurrentSession(session);
       setSessions((prev) => [session, ...prev]);
-      loadStats();
-      loadLeaderboard(selectedChallenge.id);
+      loadStats(true); // Force refresh stats after submission
+      // Remove redundant loadLeaderboard call - it's handled by useEffect when activeChallengeId changes
       
-      // Add a small delay to ensure backend has processed the submission
-      setTimeout(() => {
-        console.log('Reloading analytics after submission for challenge:', selectedChallenge.id);
-        loadAnalytics(selectedChallenge.id);
-      }, 1000);
+      // Remove setTimeout for analytics - it's handled by useEffect when activeChallengeId changes
 
       toast.success(`Scored ${session.total_score}/${selectedChallenge.max_score}! 🎉`);
     } catch (error) {
@@ -285,6 +337,11 @@ const PracticePlayground = () => {
         is_favorite: false,
         is_public: false,
       });
+      
+      // Clear cache for the current challenge to ensure fresh data
+      if (currentSession) {
+        clearChallengeCache(currentSession.challenge_id);
+      }
       
       toast.success("Saved to portfolio!");
     } catch (error) {
@@ -331,6 +388,18 @@ const PracticePlayground = () => {
     // Auto-select current challenge when switching to leaderboards
     if (value === "leaderboards" && selectedChallenge) {
       setLeaderboardSelectedChallengeId(selectedChallenge.id.toString());
+    }
+    
+    // Load data only when switching to specific tabs (lazy loading)
+    if (value === "stats" && !dataLoaded.stats) {
+      loadStats();
+    }
+    
+    if (value === "portfolio" && !dataLoaded.portfolio) {
+      // Portfolio data is already loaded in loadInitialData, but we can refresh if needed
+      if (portfolio.length === 0) {
+        loadInitialData();
+      }
     }
   };
 

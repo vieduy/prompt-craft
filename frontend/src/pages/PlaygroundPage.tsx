@@ -15,11 +15,6 @@ const PlaygroundPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const user = useUser();
 
-  // Update backend profile if user is authenticated
-  useEffect(() => {
-    // Note: Profile updates are now handled centrally in AppWrapper to prevent excessive API calls
-  }, []);
-
   const handleGenerate = async () => {
     if (!prompt.trim() || isLoading) return;
 

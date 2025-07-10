@@ -25,11 +25,6 @@ const CategoryPage = () => {
   const category = categories?.find(cat => cat.id === parseInt(categoryId || "0"));
   const categoryName = categoryNameFromUrl || category?.name || "Category";
 
-  // Update backend profile if user is authenticated
-  React.useEffect(() => {
-    // Note: Profile updates are now handled centrally in AppWrapper to prevent excessive API calls
-  }, []);
-
   const handleLessonClick = (lessonId: number) => {
     navigate(`/LessonPage?id=${lessonId}`);
   };

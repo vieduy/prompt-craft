@@ -1,8 +1,26 @@
 import { stackClientApp } from "./stack";
 
+// Cache for user data to prevent multiple /me calls
+let userCache: any = null;
+let userCacheTimestamp = 0;
+const USER_CACHE_DURATION = 5000; // 5 seconds cache
+
+const getCachedUser = async () => {
+  const now = Date.now();
+  if (userCache && (now - userCacheTimestamp) < USER_CACHE_DURATION) {
+    return userCache;
+  }
+  
+  // Fetch fresh user data
+  const user = await stackClientApp.getUser();
+  userCache = user;
+  userCacheTimestamp = now;
+  return user;
+};
+
 export const auth = {
   getAuthHeaderValue: async (): Promise<string> => {
-    const user = await stackClientApp.getUser();
+    const user = await getCachedUser();
 
     if (!user) {
       return "";
@@ -12,7 +30,7 @@ export const auth = {
     return `Bearer ${accessToken}`;
   },
   getAuthToken: async (): Promise<string> => {
-    const user = await stackClientApp.getUser();
+    const user = await getCachedUser();
 
     if (!user) {
       return "";
@@ -22,7 +40,7 @@ export const auth = {
     return accessToken ?? "";
   },
   getUserProfile: async (): Promise<{sub: string, name?: string, email?: string} | null> => {
-    const user = await stackClientApp.getUser();
+    const user = await getCachedUser();
 
     if (!user) {
       return null;
@@ -35,7 +53,7 @@ export const auth = {
     };
   },
   updateBackendProfile: async (): Promise<boolean> => {
-    const user = await stackClientApp.getUser();
+    const user = await getCachedUser();
 
     if (!user) {
       console.log('updateBackendProfile: No user found');
@@ -71,5 +89,10 @@ export const auth = {
       console.error('Failed to update backend profile:', error);
       return false;
     }
+  },
+  // Function to clear cache when needed (e.g., on logout)
+  clearUserCache: () => {
+    userCache = null;
+    userCacheTimestamp = 0;
   }
 }
