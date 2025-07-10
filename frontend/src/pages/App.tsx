@@ -18,7 +18,8 @@ import {
   BarChart3,
   TrendingUp,
   Timer,
-  Award
+  Award,
+  Clock
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -91,10 +92,16 @@ const App = () => {
         </div>
 
         <div className="flex items-center space-x-6">
-          <button className="text-gray-600 hover:text-blue-600 transition-colors">Features</button>
+          <button 
+            className="text-gray-600 hover:text-blue-600 transition-colors"
+            onClick={() => {
+              document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+          >
+            Features
+          </button>
           <button className="text-gray-600 hover:text-blue-600 transition-colors" onClick={() => navigate("/lessons")}>Lessons</button>
           <button className="text-gray-600 hover:text-blue-600 transition-colors" onClick={() => navigate("/practice-playground")}>Practice</button>
-          <button className="text-gray-600 hover:text-blue-600 transition-colors" onClick={() => navigate("/playgroundpage")}>Playground</button>
           {user && (
             <button className="text-gray-600 hover:text-blue-600 transition-colors" onClick={() => navigate("/dashboard")}>Dashboard</button>
           )}
@@ -146,7 +153,7 @@ const App = () => {
                 onClick={handleGetStarted}
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white group"
               >
-                {user ? "Continue Learning" : "Start Your AI Journey"}
+                {user ? "Go to Dashboard" : "Start Your AI Journey"}
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
 
@@ -396,10 +403,10 @@ const App = () => {
           <div className="text-center mt-12">
             <Button
               size="lg"
-              onClick={handleGetStarted}
+              onClick={() => navigate("/lessons")}
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg group"
             >
-              {user ? "Continue Your Journey" : "Start Your Learning Journey"}
+              {user ? "Explore Lessons" : "Start Your Learning Journey"}
               <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
             <p className="text-gray-500 text-sm mt-3">Join 5,000+ professionals already advancing their careers with AI</p>
@@ -467,9 +474,9 @@ const App = () => {
                   size="lg" 
                   variant="outline" 
                   className="border-purple-200 text-purple-700 hover:bg-purple-50"
-                  onClick={handleGetStarted}
+                  onClick={() => navigate('/practice-playground?tab=leaderboards')}
                 >
-                  {user ? "View Dashboard" : "Learn First"}
+                  {user ? "View Leaderboard" : "Learn First"}
                 </Button>
               </div>
             </div>
@@ -583,127 +590,425 @@ const App = () => {
         </div>
       </section>
 
-      <section className="max-w-7xl mx-auto px-6 py-16">
-        <div className="text-center space-y-4 mb-12">
-          <h2 className="text-3xl font-bold">Why PromptCraft Works for Non-Tech Professionals</h2>
-          <p className="text-xl text-gray-600">Designed specifically for business professionals who want practical AI skills</p>
-        </div>
+      <section id="features" className="py-20 md:py-32 bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+        <div className="max-w-7xl mx-auto px-6">
+          {/* Enhanced Header */}
+          <div className="text-center space-y-6 mb-16">
+            <span className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full px-6 py-3 text-sm font-semibold border border-blue-200">
+              <Sparkles className="w-4 h-4" />
+              Designed for Real Professionals
+            </span>
+            
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900">
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Why PromptCraft Works
+              </span>
+              <br />
+              <span className="text-gray-800">for Non-Tech Professionals</span>
+            </h2>
+            
+            <p className="max-w-3xl mx-auto text-xl text-gray-600 leading-relaxed">
+              We've designed every aspect of PromptCraft specifically for business professionals who want practical AI skills without the technical jargon.
+            </p>
+          </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          <Card className="group hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Brain className="w-6 h-6 text-blue-600" />
-              </div>
-              <CardTitle>Learn by Doing</CardTitle>
-              <CardDescription>
-                No boring theory. Jump straight into practical exercises with real business scenarios.
-              </CardDescription>
-            </CardHeader>
-          </Card>
+          {/* Main Features Grid */}
+          <div className="grid lg:grid-cols-3 gap-8 mb-16">
+            {/* Feature 1: Learn by Doing */}
+            <div className="group relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
+              <Card className="relative bg-white/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                <CardHeader className="text-center space-y-6 pb-8">
+                  <div className="relative">
+                    <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                      <Brain className="w-10 h-10 text-white" />
+                    </div>
+                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                      <CheckCircle className="w-4 h-4 text-white" />
+                    </div>
+                  </div>
+                  <div>
+                    <CardTitle className="text-2xl font-bold text-gray-900 mb-3">Learn by Doing</CardTitle>
+                    <CardDescription className="text-gray-600 text-base leading-relaxed">
+                      No boring theory or technical jargon. Jump straight into practical exercises with real business scenarios you'll actually use at work.
+                    </CardDescription>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 text-sm text-gray-700">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <span>Real workplace scenarios</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm text-gray-700">
+                      <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                      <span>Hands-on practice exercises</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm text-gray-700">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span>Immediate application</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
-          <Card className="group hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Target className="w-6 h-6 text-green-600" />
-              </div>
-              <CardTitle>AI-Powered Feedback</CardTitle>
-              <CardDescription>
-                Get instant, personalized feedback on your prompts and learn exactly how to improve.
-              </CardDescription>
-            </CardHeader>
-          </Card>
+            {/* Feature 2: AI-Powered Feedback */}
+            <div className="group relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-blue-500 rounded-2xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
+              <Card className="relative bg-white/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-blue-500"></div>
+                <CardHeader className="text-center space-y-6 pb-8">
+                  <div className="relative">
+                    <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                      <Target className="w-10 h-10 text-white" />
+                    </div>
+                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                      <Zap className="w-4 h-4 text-white" />
+                    </div>
+                  </div>
+                  <div>
+                    <CardTitle className="text-2xl font-bold text-gray-900 mb-3">AI-Powered Feedback</CardTitle>
+                    <CardDescription className="text-gray-600 text-base leading-relaxed">
+                      Get instant, personalized feedback on your prompts. Learn exactly what works, what doesn't, and how to improve step by step.
+                    </CardDescription>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 text-sm text-gray-700">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span>Instant scoring & analysis</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm text-gray-700">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <span>Personalized improvement tips</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm text-gray-700">
+                      <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                      <span>Detailed explanations</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
-          <Card className="group hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Zap className="w-6 h-6 text-purple-600" />
+            {/* Feature 3: Progressive Learning */}
+            <div className="group relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
+              <Card className="relative bg-white/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-pink-500"></div>
+                <CardHeader className="text-center space-y-6 pb-8">
+                  <div className="relative">
+                    <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                      <Rocket className="w-10 h-10 text-white" />
+                    </div>
+                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                      <TrendingUp className="w-4 h-4 text-white" />
+                    </div>
+                  </div>
+                  <div>
+                    <CardTitle className="text-2xl font-bold text-gray-900 mb-3">Progressive Learning</CardTitle>
+                    <CardDescription className="text-gray-600 text-base leading-relaxed">
+                      Start with basics and gradually master advanced techniques at your own pace. Build confidence as you progress through structured levels.
+                    </CardDescription>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 text-sm text-gray-700">
+                      <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                      <span>Structured learning path</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm text-gray-700">
+                      <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
+                      <span>Self-paced progression</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm text-gray-700">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      <span>Confidence building</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Additional Benefits Section */}
+          <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">What Makes Us Different</h3>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Unlike traditional tech courses, we focus on practical business applications that you can use immediately in your career.
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="text-center space-y-3">
+                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto">
+                  <Users className="w-6 h-6 text-blue-600" />
+                </div>
+                <h4 className="font-semibold text-gray-900">No Tech Background Required</h4>
+                <p className="text-sm text-gray-600">Designed for business professionals, not developers</p>
               </div>
-              <CardTitle>Progressive Learning</CardTitle>
-              <CardDescription>
-                Start with basics and gradually master advanced techniques at your own pace.
-              </CardDescription>
-            </CardHeader>
-          </Card>
+              
+              <div className="text-center space-y-3">
+                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto">
+                  <Clock className="w-6 h-6 text-green-600" />
+                </div>
+                <h4 className="font-semibold text-gray-900">Learn at Your Own Pace</h4>
+                <p className="text-sm text-gray-600">Flexible learning that fits your busy schedule</p>
+              </div>
+              
+              <div className="text-center space-y-3">
+                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto">
+                  <Trophy className="w-6 h-6 text-purple-600" />
+                </div>
+                <h4 className="font-semibold text-gray-900">Proven Results</h4>
+                <p className="text-sm text-gray-600">Join 5,000+ professionals who've transformed their work</p>
+              </div>
+              
+              <div className="text-center space-y-3">
+                <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mx-auto">
+                  <Award className="w-6 h-6 text-orange-600" />
+                </div>
+                <h4 className="font-semibold text-gray-900">Career Impact</h4>
+                <p className="text-sm text-gray-600">Skills that directly improve your job performance</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Call to Action */}
+          <div className="text-center mt-12">
+            <Button
+              size="lg"
+              onClick={() => navigate("/lessons")}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg group shadow-xl hover:shadow-2xl transition-all duration-300"
+            >
+              {user ? "Start Practicing" : "Start Learning Today"}
+              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+            </Button>
+            <p className="text-gray-500 text-sm mt-4">Join professionals already mastering AI in their careers</p>
+          </div>
         </div>
       </section>
 
-      <section className="bg-white py-16">
+      <section className="bg-gradient-to-br from-white via-blue-50 to-purple-50 py-20">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center space-y-4 mb-12">
-            <h2 className="text-3xl font-bold">Join Professionals Already Mastering AI</h2>
-            <p className="text-xl text-gray-600">See how PromptCraft transformed their work</p>
+          {/* Enhanced Header */}
+          <div className="text-center space-y-6 mb-16">
+            <span className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full px-6 py-3 text-sm font-semibold border border-blue-200 animate-pulse">
+              <Star className="w-4 h-4" />
+              Success Stories
+            </span>
+            
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900">
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Join Professionals
+              </span>
+              <br />
+              <span className="text-gray-800">Already Mastering AI</span>
+            </h2>
+            
+            <p className="max-w-3xl mx-auto text-xl text-gray-600 leading-relaxed">
+              See how PromptCraft transformed their work and careers. Real stories from real professionals.
+            </p>
           </div>
 
+          {/* Enhanced Testimonials Grid */}
           <div className="grid md:grid-cols-3 gap-8">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-1 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-gray-600 mb-4">
-                  "I went from being intimidated by AI to using it daily for client communications. The practical approach made all the difference."
-                </p>
-                <div className="flex items-center space-x-3">
-                  <Avatar>
-                    <AvatarImage src="https://images.unsplash.com/photo-1494790108755-2616b612b495?w=150" />
-                    <AvatarFallback>SC</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium">Sarah Chen</p>
-                    <p className="text-sm text-gray-500">Marketing Manager</p>
+            {/* Testimonial 1 */}
+            <div className="group relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
+              <Card className="relative bg-white/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-4 overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                <CardContent className="p-8">
+                  {/* Animated Stars */}
+                  <div className="flex items-center space-x-1 mb-6">
+                    {[...Array(5)].map((_, i) => (
+                      <Star 
+                        key={i} 
+                        className="w-5 h-5 fill-yellow-400 text-yellow-400 animate-pulse" 
+                        style={{ animationDelay: `${i * 100}ms` }}
+                      />
+                    ))}
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                  
+                  {/* Quote Icon */}
+                  <div className="absolute top-6 right-6 w-12 h-12 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity">
+                    <span className="text-2xl">"</span>
+                  </div>
+                  
+                  <p className="text-gray-700 mb-6 leading-relaxed text-lg relative z-10">
+                    "I went from being intimidated by AI to using it daily for client communications. The practical approach made all the difference."
+                  </p>
+                  
+                  {/* Enhanced Profile */}
+                  <div className="flex items-center space-x-4">
+                    <div className="relative">
+                      <Avatar className="w-12 h-12 ring-2 ring-blue-200 group-hover:ring-purple-300 transition-all duration-300">
+                        <AvatarImage src="https://images.unsplash.com/photo-1494790108755-2616b612b495?w=150" />
+                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white">SC</AvatarFallback>
+                      </Avatar>
+                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-pulse"></div>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">Sarah Chen</p>
+                      <p className="text-sm text-gray-500">Marketing Manager</p>
+                      <div className="flex items-center gap-1 mt-1">
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <span className="text-xs text-green-600 font-medium">40% productivity increase</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-1 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-gray-600 mb-4">
-                  "The AI feedback system helped me understand exactly what makes a good prompt. My productivity increased by 40%."
-                </p>
-                <div className="flex items-center space-x-3">
-                  <Avatar>
-                    <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150" />
-                    <AvatarFallback>MR</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium">Mike Rodriguez</p>
-                    <p className="text-sm text-gray-500">Sales Director</p>
+            {/* Testimonial 2 */}
+            <div className="group relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-blue-500 rounded-2xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
+              <Card className="relative bg-white/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-4 overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-blue-500"></div>
+                <CardContent className="p-8">
+                  {/* Animated Stars */}
+                  <div className="flex items-center space-x-1 mb-6">
+                    {[...Array(5)].map((_, i) => (
+                      <Star 
+                        key={i} 
+                        className="w-5 h-5 fill-yellow-400 text-yellow-400 animate-pulse" 
+                        style={{ animationDelay: `${i * 150}ms` }}
+                      />
+                    ))}
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                  
+                  {/* Quote Icon */}
+                  <div className="absolute top-6 right-6 w-12 h-12 bg-gradient-to-br from-green-100 to-blue-100 rounded-full flex items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity">
+                    <span className="text-2xl">"</span>
+                  </div>
+                  
+                  <p className="text-gray-700 mb-6 leading-relaxed text-lg relative z-10">
+                    "The AI feedback system helped me understand exactly what makes a good prompt. My productivity increased by 40%."
+                  </p>
+                  
+                  {/* Enhanced Profile */}
+                  <div className="flex items-center space-x-4">
+                    <div className="relative">
+                      <Avatar className="w-12 h-12 ring-2 ring-green-200 group-hover:ring-blue-300 transition-all duration-300">
+                        <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150" />
+                        <AvatarFallback className="bg-gradient-to-br from-green-500 to-blue-500 text-white">MR</AvatarFallback>
+                      </Avatar>
+                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white animate-pulse"></div>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">Mike Rodriguez</p>
+                      <p className="text-sm text-gray-500">Sales Director</p>
+                      <div className="flex items-center gap-1 mt-1">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                        <span className="text-xs text-blue-600 font-medium">AI expert in team</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-1 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-gray-600 mb-4">
-                  "Finally, an AI course that speaks my language. No technical jargon, just practical skills I use every day."
-                </p>
-                <div className="flex items-center space-x-3">
-                  <Avatar>
-                    <AvatarImage src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150" />
-                    <AvatarFallback>JW</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium">Jennifer Wang</p>
-                    <p className="text-sm text-gray-500">Operations Lead</p>
+            {/* Testimonial 3 */}
+            <div className="group relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
+              <Card className="relative bg-white/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-4 overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-pink-500"></div>
+                <CardContent className="p-8">
+                  {/* Animated Stars */}
+                  <div className="flex items-center space-x-1 mb-6">
+                    {[...Array(5)].map((_, i) => (
+                      <Star 
+                        key={i} 
+                        className="w-5 h-5 fill-yellow-400 text-yellow-400 animate-pulse" 
+                        style={{ animationDelay: `${i * 200}ms` }}
+                      />
+                    ))}
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                  
+                  {/* Quote Icon */}
+                  <div className="absolute top-6 right-6 w-12 h-12 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity">
+                    <span className="text-2xl">"</span>
+                  </div>
+                  
+                  <p className="text-gray-700 mb-6 leading-relaxed text-lg relative z-10">
+                    "Finally, an AI course that speaks my language. No technical jargon, just practical skills I use every day."
+                  </p>
+                  
+                  {/* Enhanced Profile */}
+                  <div className="flex items-center space-x-4">
+                    <div className="relative">
+                      <Avatar className="w-12 h-12 ring-2 ring-purple-200 group-hover:ring-pink-300 transition-all duration-300">
+                        <AvatarImage src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150" />
+                        <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white">JW</AvatarFallback>
+                      </Avatar>
+                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-pink-500 rounded-full border-2 border-white animate-pulse"></div>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">Jennifer Wang</p>
+                      <p className="text-sm text-gray-500">Operations Lead</p>
+                      <div className="flex items-center gap-1 mt-1">
+                        <div className="w-2 h-2 bg-pink-500 rounded-full animate-pulse"></div>
+                        <span className="text-xs text-pink-600 font-medium">Daily AI user</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Floating Stats */}
+          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="text-center group">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                <Users className="w-8 h-8 text-white" />
+              </div>
+              <div className="text-3xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">5,000+</div>
+              <div className="text-sm text-gray-600">Active Learners</div>
+            </div>
+            
+            <div className="text-center group">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                <Trophy className="w-8 h-8 text-white" />
+              </div>
+              <div className="text-3xl font-bold text-gray-900 mb-2 group-hover:text-green-600 transition-colors">94%</div>
+              <div className="text-sm text-gray-600">Success Rate</div>
+            </div>
+            
+            <div className="text-center group">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                <Star className="w-8 h-8 text-white" />
+              </div>
+              <div className="text-3xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">4.9/5</div>
+              <div className="text-sm text-gray-600">Average Rating</div>
+            </div>
+            
+            <div className="text-center group">
+              <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                <Rocket className="w-8 h-8 text-white" />
+              </div>
+              <div className="text-3xl font-bold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">40%</div>
+              <div className="text-sm text-gray-600">Productivity Boost</div>
+            </div>
+          </div>
+
+          {/* Call to Action */}
+          <div className="text-center mt-12">
+            <Button
+              size="lg"
+              onClick={handleGetStarted}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg group shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+            >
+              {user ? "Continue Your Journey" : "Join Them Today"}
+              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+            </Button>
+            <p className="text-gray-500 text-sm mt-4 animate-pulse">Start your AI transformation journey today</p>
           </div>
         </div>
       </section>
@@ -711,33 +1016,66 @@ const App = () => {
       <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
         <div className="max-w-7xl mx-auto px-6 text-center space-y-8">
           <h2 className="text-4xl font-bold">
-            Ready to Transform Your Relationship with AI?
+            Ready to Start Your AI Journey?
           </h2>
           <p className="text-xl text-blue-100">
-            Join thousands of professionals who've already unlocked their AI potential
+            Choose your path and begin transforming your work with AI today
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              size="lg"
-              onClick={handleGetStarted}
-              className="bg-white text-blue-600 hover:bg-gray-100"
-            >
-              {user ? "Continue Your Journey" : "Start Learning Today"}
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
+          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            {/* Quick Start Option */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300">
+              <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Play className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Try Free Demo</h3>
+              <p className="text-blue-100 text-sm mb-4">Experience the platform with no commitment</p>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleTryDemo}
+                className="w-full border-white text-white hover:bg-white hover:text-blue-600 bg-white/20"
+              >
+                Start Demo
+              </Button>
+            </div>
 
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={handleTryDemo}
-              className="border-white text-white hover:bg-white hover:text-blue-600"
-            >
-              Try Free Demo
-            </Button>
+            {/* Full Access Option */}
+            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/30 hover:bg-white/30 transition-all duration-300">
+              <div className="w-12 h-12 bg-white/30 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Rocket className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Full Access</h3>
+              <p className="text-blue-100 text-sm mb-4">Unlock all lessons and practice challenges</p>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleGetStarted}
+                className="w-full border-white text-white hover:bg-white hover:text-blue-600 bg-white/20"
+              >
+                {user ? "Go to Dashboard" : "Get Started Free"}
+              </Button>
+            </div>
+
+            {/* Learn More Option */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300">
+              <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Book className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Browse Lessons</h3>
+              <p className="text-blue-100 text-sm mb-4">Explore our structured learning path</p>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => navigate("/lessons")}
+                className="w-full border-white text-white hover:bg-white hover:text-blue-600 bg-white/20"
+              >
+                View Lessons
+              </Button>
+            </div>
           </div>
 
-          <div className="flex items-center justify-center space-x-8 text-blue-100">
+          <div className="flex items-center justify-center space-x-8 text-blue-100 pt-4">
             <div className="flex items-center space-x-2">
               <Users className="w-5 h-5" />
               <span>5,000+ learners</span>
@@ -784,15 +1122,16 @@ const App = () => {
               <ul className="space-y-2 text-gray-400">
                 <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Community</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Feedback</a></li>
+                <li><a href="mailto:hoangduy.cqb.2k@gmail.com" className="hover:text-white transition-colors">Gmail</a></li>
+                <li><a href="tel:+84914542457" className="hover:text-white transition-colors">Phone</a></li>
+                <li><a href="https://linkedin.com/in/duy-hoang-vien/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">LinkedIn</a></li>
               </ul>
             </div>
 
             <div>
               <h3 className="font-semibold mb-4">Company</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">About</a></li>
+                <li><a href="https://linkedin.com/company/vng-coporation/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">About</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Privacy</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Terms</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
@@ -801,7 +1140,7 @@ const App = () => {
           </div>
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 PromptCraft. All rights reserved.</p>
+            <p>&copy; 2025 PromptCraft. All rights reserved.</p>
           </div>
         </div>
       </footer>
